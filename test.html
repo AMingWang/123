@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星宇虛擬航空 - STARLUX Virtual Aviation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="navbar">
+            <h1>星宇虛擬航空 - STARLUX Virtual Aviation</h1>
+            <nav>
+                <ul>
+                    <li><a href="#about">關於我們</a></li>
+                    <li><a href="#flights">航班資訊</a></li>
+                    <li><a href="#join">加入我們</a></li>
+                    <li><a href="#contact">聯繫我們</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section id="about">
+        <h2>關於星宇虛擬航空</h2>
+        <p>星宇虛擬航空（STARLUX Virtual Aviation）是一個提供飛行模擬愛好者進行航班訓練、航線規劃、及模擬飛行體驗的平台。我們模擬真實的航空公司操作，致力於提供最佳的虛擬航空體驗。</p>
+    </section>
+
+    <section id="flights">
+        <h2>航班資訊</h2>
+        <p>查看我們的航班資訊，並加入即將到來的飛行活動！</p>
+        <!-- 可以嵌入航班日曆或即將到來的航班列表 -->
+    </section>
+
+    <section id="join">
+        <h2>加入我們</h2>
+        <p>如果你對航空模擬飛行感興趣，快來加入我們！註冊成為我們的一員，並參加各種有趣的虛擬航班。</p>
+        <a href="register.html" class="button">立即註冊</a>
+    </section>
+
+    <section id="contact">
+        <h2>聯繫我們</h2>
+        <p>如果你有任何問題，隨時聯繫我們！</p>
+        <form action="/submit" method="post">
+            <label for="name">姓名：</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">電子郵件：</label>
+            <input type="email" id="email" name="email" required>
+            <label for="message">訊息：</label>
+            <textarea id="message" name="message" required></textarea>
+            <button type="submit">提交</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>© 2025 星宇虛擬航空 - STARLUX Virtual Aviation</p>
+    </footer>
+</body>
+</html>
