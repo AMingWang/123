@@ -1,706 +1,573 @@
-<html lang="zh-TW"><head>
-  <meta charset="UTF-8">
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>中華虛擬航空 China Airlines Virtual</title>
+  <meta name="description" content="中華虛擬航空於2021年9月3日在台灣成立，是一家非營利的虛擬航空公司，我們會一起在虛擬天空中，與同好們一同享受無壓力的飛行。">
+  <meta name="keywords" content="IVAO, VATSIM, MSFS, XP12, Virtual airlines, 虛擬航空">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="幣圈3星電選4倍10期 - 提供區塊鏈合約隨機開單工具，讓您輕鬆模擬下單投注，娛樂性與實用性兼具。">
-  <meta name="keywords" content="幣圈3星電選4倍10期, 幣圈三星電選四倍十期, 3星電選4倍10期, 三星電選四倍十期, 區塊鏈, 合約交易, 下單投注">
-
-  <!-- Open Graph 標籤，利於社群分享 -->
-  <meta property="og:title" content="幣圈3星電選4倍10期">
-  <meta property="og:description" content="使用我們的隨機開單工具，模擬區塊鏈合約下單投注，純屬娛樂！">
-  <meta property="og:url" content="https://miner.tw/bingobingo/">
+  <meta property="og:title" content="中華虛擬航空 China Airlines Virtual">
+  <meta property="og:description" content="中華虛擬航空於2021年9月3日在台灣成立，是一家非營利的虛擬航空公司，我們會一起在虛擬天空中，與同好們一同享受無壓力的飛行。">
+  <meta property="og:url" content="https://china-airlines-virtual.github.io/">
+  <meta property="og:site_name" content="中華虛擬航空 China Airlines Virtual">
+  <meta property="og:image" content="/assets/img/ogimage.jpg">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://miner.tw/bingobingo/fake_logo.png">
 
-  <title>幣圈3星電選4倍10期</title>
-  <!-- 使用 Noto Sans TC 作為中文字體 -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC&amp;display=swap" rel="stylesheet">
-  <!-- 引入 canvas-confetti (彩帶效果) -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-  <style>
-    /* 全站重置與字型 */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Noto Sans TC", sans-serif;
-    }
-    /* 頁面背景：柔和米黃色漸層 */
-    body {
-      background: linear-gradient(180deg, #fcf8cc 0%, #ffeb83 100%);
-      min-height: 100vh;
-    }
-    /* 頂部導覽列 - 桌面版採用三欄佈局 */
-    .top-bar {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #3F7779;
-      padding: 12px 20px;
-    }
-    .top-bar .left,
-    .top-bar .right {
-      width: 50px;
-    }
-    .top-bar .left img {
-      height: 50px;
-    }
-    /* 將中間標題改為 H1，並整合關鍵字 */
-    .top-title {
-      flex: 1;
-      text-align: center;
-      color: #fff;
-      font-weight: bold;
-      font-size: 1.8rem;
-      margin: 0;
-    }
-    /* 手機版頂部導覽列：垂直排列 */
-    @media (max-width: 767px) {
-      .top-bar {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 80px;
-      }
-      .top-bar .left, .top-bar .right {
-        width: auto;
-      }
-      .top-bar .left img {
-        height: 50px;
-      }
-      .top-title {
-        position: static;
-        transform: none;
-        margin-top: 10px;
-        font-size: 1.6rem;
-      }
-    }
-    /* 主要內容區 */
-    .container {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 30px 40px;
-      max-width: 650px;
-      width: 95%;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-      margin: 20px auto 40px;
-    }
-    .container:hover {
-      transform: scale(1.02);
-    }
-    /* 進階設定區：預設隱藏，平滑展開／收合 */
-    #advanced-settings {
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-      margin-bottom: 20px;
-    }
-    #advanced-settings.open {
-      max-height: 1000px;
-      opacity: 1;
-      overflow: visible;
-    }
-    /* 進階設定切換按鈕 */
-    #toggle-advanced {
-      display: block;
-      width: 180px;
-      margin: 0 auto 20px;
-      padding: 10px 20px;
-      background: linear-gradient(135deg, #3F7779, #2a556a);
-      color: #fff;
-      border: none;
-      border-radius: 25px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
-    }
-    #toggle-advanced:hover {
-      background: linear-gradient(135deg, #2a556a, #3F7779);
-      transform: scale(1.05);
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
-    }
-    #toggle-advanced::after {
-      content: ' ▼';
-      font-size: 0.9rem;
-      transition: transform 0.3s;
-    }
-    #toggle-advanced.open::after {
-      transform: rotate(180deg);
-    }
-    /* 表單元件樣式 */
-    .form-group {
-      margin-bottom: 18px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      color: #555;
-      font-size: 1.1rem;
-    }
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1px solid #e40011;
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-      border-color: #a8000b;
-      box-shadow: 0 0 5px rgba(228,0,17,0.5);
-      outline: none;
-    }
-    .radio-group, .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .radio-group input[type="radio"],
-    .checkbox-group input[type="checkbox"] {
-      transform: scale(1.2);
-      accent-color: #4A90E2;
-    }
-    /* 下單投注按鈕 */
-    #roll-button {
-      background: #E60012;
-      color: #fff;
-      border: none;
-      border-radius: 50px;
-      padding: 12px 30px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-      width: 100%;
-    }
-    #roll-button:hover {
-      background: #C60000;
-      transform: scale(1.03);
-    }
-    /* Slot Machine 結果區 - 使用 CSS Grid 佈局 */
-    .slot-machine {
-      margin-top: 30px;
-      padding: 20px;
-      background: #ffe001;
-      border: 3px dashed #e40011;
-      border-radius: 20px;
-      overflow: hidden;
-      display: grid;
-      gap: 15px;
-    }
-    /* 桌面版：依據顯示中 Slot 數量動態平均分配 */
-    @media (min-width: 768px) {
-      .slot-machine {
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      }
-    }
-    /* 手機版：固定一排 3 個 Slot */
-    @media (max-width: 767px) {
-      .slot-machine {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-    /* Slot 基本樣式 */
-    .slot {
-      height: 80px;
-      border: 1px solid #e40011;
-      border-radius: 12px;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      position: relative;
-    }
-    .slot-header {
-      height: 40px;
-      line-height: 40px;
-      background: #e40011;
-      text-align: center;
-      font-weight: bold;
-      border-bottom: 1px solid #e40011;
-      color: #fff;
-      flex-shrink: 0;
-    }
-    .slot-content {
-      position: relative;
-      height: 40px;
-      overflow: hidden;
-      background: #fff;
-    }
-    .reel {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-    }
-    .slot-item {
-      height: 40px;
-      line-height: 40px;
-      text-align: center;
-      color: #4A4A4A;
-    }
-    /* 移除旋轉特效 */
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
-    .pop {
-      animation: pop 0.5s;
-    }
-    /* 說明與推薦資料區塊，統一風格 */
-    .info-section {
-      background: #ffffff;
-      border-radius: 20px;
-      padding: 20px 30px;
-      max-width: 650px;
-      width: 95%;
-      margin: 20px auto;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-    }
-    .info-section table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 0.9rem;
-    }
-    .info-section th, .info-section td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-    }
-    .info-section th {
-      background: #3F7779;
-      color: #fff;
-    }
-    .info-section a {
-      color: #E60012;
-      text-decoration: none;
-    }
-    .info-section a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/favicon.png" rel="apple-touch-icon">
+  <!--<link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">-->
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="assets/vendor/animate.css/animate.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="assets/vendor/leaflet/leaflet.css" rel="stylesheet">
+  <link href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" rel="stylesheet">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/flip-flap.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <!-- google icon -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+
+
+  <!-- =======================================================
+  * Template Name: 中華虛擬航空
+  * Template URL: https://bootstrapmade.com/中華虛擬航空-free-medical-bootstrap-theme/
+  * Updated: Mar 17 2024 with Bootstrap v5.3.3
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
 </head>
+
 <body>
-  <!-- 頂部導覽列 -->
-  <header class="top-bar">
-    <div class="left">
-      <img src="https://miner.tw/bingobingo/fake_logo.png" alt="台灣彩券">
-    </div>
-    <!-- 將中間標題改為 H1，並整合您需要的關鍵字 -->
-    <h1 class="center top-title">幣圈3星電選4倍10期</h1>
-    <div class="right"></div>
-  </header>
 
-  <!-- 主要內容區 -->
-  <div class="container">
-    <!-- 進階設定切換按鈕 -->
-    <button id="toggle-advanced">進階設定</button>
-    <!-- 進階設定區塊，預設隱藏 -->
-    <div id="advanced-settings">
-      <div class="form-group">
-        <label for="token-input">幣種 (手動輸入或使用隨機)：</label>
-        <input type="text" id="token-input" placeholder="例如：BTC">
-        <div class="checkbox-group">
-          <input type="checkbox" id="random-token-checkbox">
-          <label for="random-token-checkbox">隨機幣種 (從幣安查詢)</label>
+  <!-- ======= Header ======= -->
+  <header id="header" class="fixed-top">
+    <div class="container d-flex align-items-center">
+
+      <div class="me-auto">
+        <img src="assets/img/logo.png" alt="" height="60">
+      </div>
+      <!-- Uncomment below if you prefer to use an image logo -->
+      <!-- <a href="index.html" class="logo me-auto"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+      <nav id="navbar" class="navbar order-last order-lg-0">
+        <ul>
+          <li><a class="nav-link scrollto active" href="#hero">首頁</a></li>
+          <li><a class="nav-link scrollto" href="#hiring">人才招募</a></li>
+          <li><a class="nav-link scrollto" href="#statistics">統計數據</a></li>
+          <li><a class="nav-link scrollto" href="#members">成員名單</a></li>
+          <li><a class="nav-link scrollto" href="#partners">合作夥伴</a></li>
+          <li><a class="nav-link scrollto" href="#privacy">隱私權政策</a></li>
+          <li><a class="nav-link scrollto" href="/index-en.html">English</a></li>
+        </ul>
+        <i class="bi bi-list mobile-nav-toggle"></i>
+      </nav><!-- .navbar -->
+
+      <a href="https://crew.china-airlines-virtual.com/dashboard" class="appointment-btn scrollto"><span class="d-none d-md-inline">組員登入</span></a>
+
+    </div>
+  </header><!-- End Header -->
+
+  <!-- ======= Hero Section ======= -->
+  <section id="hero" class="d-flex align-items-center">
+    <div class="hero-cover">
+      <img src="assets/img/hero-bg.png" alt="">
+      <div class="mask"></div>
+    </div>
+    <div class="container">
+      <h1>中華虛擬航空</h1>
+      <h2>點亮台灣的天空</h2>
+      <a href="https://discord.gg/USDFnDamPG" class="btn-get-started scrollto">加入我們</a>
+    </div>
+  </section><!-- End Hero -->
+
+  <main id="main">
+
+    <!-- ======= Why Us Section ======= -->
+    <section id="why-us" class="why-us">
+      <div class="container">
+
+        <div class="row">
+          <div class="col-lg-4 d-flex align-items-stretch">
+            <div class="content">
+              <h3>為何選擇中華虛擬航空?</h3>
+              <p>
+                中華虛擬航空於2021年9月3日在台灣成立，是一家非營利的虛擬航空公司。
+                我們不要求每位飛行員都具備艱深的航空文獻、空氣動力學、導航及氣象學等知識。新手會以由淺入深方式，帶您進入航空領域；當然更歡迎老手在這裡享受無壓力的飛行。我們也會定期、不定期的舉辦活動，只要您有一顆飛行的心，嚮往翱翔在無邊無際的天空。無論新手或老手，都竭誠歡迎您加入這個大家庭。
+              </p>
+              <div class="text-center">
+                <a href="https://discord.gg/USDFnDamPG" class="more-btn">加入我們 <i class="bx bx-chevron-right"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-8 d-flex align-items-stretch">
+            <div class="icon-boxes d-flex flex-column justify-content-center">
+              <div class="row">
+                <div class="col-xl-4 d-flex align-items-stretch">
+                  <div class="icon-box mt-4 mt-xl-0">
+                    <i class="bx bx-receipt"></i>
+                    <h4>連飛活動</h4>
+                    <p>與其他虛擬航空公司舉辦飛行活動</p>
+                  </div>
+                </div>
+                <div class="col-xl-4 d-flex align-items-stretch">
+                  <div class="icon-box mt-4 mt-xl-0">
+                    <i class="bx bx-cube-alt"></i>
+                    <h4>線上教學</h4>
+                    <p>至今已經舉辦數十場線上課程，讓菜鳥成為能夠自在與航管溝通的機師</p>
+                  </div>
+                </div>
+                <div class="col-xl-4 d-flex align-items-stretch">
+                  <div class="icon-box mt-4 mt-xl-0">
+                    <i class="bx bx-images"></i>
+                    <h4>台灣最活躍社群</h4>
+                    <p>每天都有許多成員在 Discord 上愉快的交流</p>
+                  </div>
+                </div>
+              </div>
+            </div><!-- End .content-->
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End Why Us Section -->
+
+    <!-- ======= Counts Section ======= -->
+    <section id="counts" class="counts">
+      <div class="container">
+
+        <div class="row">
+
+          <div class="col-lg-4 col-md-6">
+            <div class="count-box">
+              <i class="fas fa-user-md"></i>
+              <span id="purecounter-pilots">0</span>
+              <p>活躍機師</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mt-5 mt-md-0">
+            <div class="count-box">
+              <i class="far fa-hospital"></i>
+              <span id="purecounter-legs">0</span>
+              <p>班次</p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mt-5 mt-lg-0">
+            <div class="count-box">
+              <i class="fas fa-flask"></i>
+              <span id="purecounter-time">0</span>
+              <p>飛行時數</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Counts Section -->
+
+    <!-- ======= About Section ======= -->
+    <section id="hiring" class="about">
+      <div class="container-fluid">
+
+        <div class="row">
+          <div class="col-xl-5 col-lg-6 video-box d-flex justify-content-center align-items-stretch position-relative">
+            <a href="https://youtu.be/wL98U1r6JDk?si=2vU1z39H22a3R4P4" class="glightbox play-btn mb-4"></a>
+          </div>
+
+          <div class="col-xl-7 col-lg-6 icon-boxes d-flex flex-column align-items-stretch justify-content-center py-5 px-lg-5">
+            <h3>人才招募</h3>
+            <p>無論是菜鳥、資深機師、專業航管，我們都非常歡迎您的加入</p>
+
+            <div class="icon-box">
+              <a href="https://discord.gg/USDFnDamPG" target="_blank">
+                <div class="icon"><i class="bx bxl-discord"></i></div>
+                <h4 class="title">加入 Discord</h4>
+              </a>
+              <p class="description">每天都有成員們在線上飛行、學習、討論</p>
+            </div>
+
+            <div class="icon-box">
+              <a href="https://www.facebook.com/groups/596448671760640" target="_blank">
+                <div class="icon"><i class="bx bxl-facebook"></i></div>
+                <h4 class="title">加入 Facebook 社團</h4>
+              </a>
+              <p class="description">社團內有設百位成員與你一起分享飛行時的快樂</p>
+            </div>
+
+            <div class="icon-box">
+              <a href="https://www.instagram.com/china.airlines_virtual" target="_blank">
+                <div class="icon"><i class="bx bxl-instagram"></i></div>
+                <h4 class="title">追蹤 Instagram</h4>
+              </a>
+              <p class="description">不定時分享活動資訊及照片</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section><!-- End About Section -->
+
+    <!-- ======= Departments Section ======= -->
+    <section id="statistics" class="departments">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>統計數據</h2>
+        </div>
+
+        <div class="row gy-4">
+          <div class="col-lg-2">
+            <ul class="nav nav-tabs flex-column" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active show" data-bs-toggle="tab" href="#tab-1" aria-selected="true" role="tab">總航班數前 5 名</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-2" aria-selected="false" tabindex="-1" role="tab">總飛行時數前 5 名</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-3" aria-selected="false" tabindex="-1" role="tab">本年航班數前 5 名</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-4" aria-selected="false" tabindex="-1" role="tab">本年飛行時數前 5 名</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-5" aria-selected="false" tabindex="-1" role="tab">本月航班數前 5 名</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-6" aria-selected="false" tabindex="-1" role="tab">本月飛行時數前 5 名</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-4">
+            <div class="tab-content">
+              <div class="tab-pane active show" id="tab-1" role="tabpanel">
+                <div class="row gy-4">
+                  <div id="statistics-all-legs" class="col-lg-8 details order-2 order-lg-1">
+                    <h3>總航班數前 5 名</h3>
+                  <p class="fst-italic">C.C. Liu - 3974 班次</p><p class="fst-italic">Y.C. Su - 1405 班次</p><p class="fst-italic">Y.W. Hsu - 701 班次</p><p class="fst-italic">C.H. Chang - 697 班次</p><p class="fst-italic">C.Y. Liu - 658 班次</p></div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-2" role="tabpanel">
+                <div class="row gy-4">
+                  <div id="statistics-all-duration" class="col-lg-8 details order-2 order-lg-1">
+                    <h3>總飛行時數前 5 名</h3>
+                  <p class="fst-italic">C.C. Liu - 8812 小時</p><p class="fst-italic">Y.C. Su - 3374 小時</p><p class="fst-italic">C.H. Chang - 1953 小時</p><p class="fst-italic">Y.W. Hsu - 1671 小時</p><p class="fst-italic">C.Y. Liu - 1506 小時</p></div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-3" role="tabpanel">
+                <div class="row gy-4">
+                  <div id="statistics-year-legs" class="col-lg-8 details order-2 order-lg-1">
+                    <h3>本年航班數前 5 名</h3>
+                  <p class="fst-italic">C.C. Liu - 81 班次</p><p class="fst-italic">C.H. Chang - 45 班次</p><p class="fst-italic">S.S. Sun - 31 班次</p><p class="fst-italic">C.H. Chang - 29 班次</p><p class="fst-italic">H.L. Chung - 27 班次</p></div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-4" role="tabpanel">
+                <div class="row gy-4">
+                  <div id="statistics-year-duration" class="col-lg-8 details order-2 order-lg-1">
+                    <h3>本年飛行時數前 5 名</h3>
+                  <p class="fst-italic">T.L. Chao - 196 小時</p><p class="fst-italic">C.C. Liu - 157 小時</p><p class="fst-italic">C.H. Chang - 139 小時</p><p class="fst-italic">C.Y. Chen - 98 小時</p><p class="fst-italic">S.S. Sun - 68 小時</p></div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-5" role="tabpanel">
+                <div class="row gy-4">
+                  <div id="statistics-month-legs" class="col-lg-8 details order-2 order-lg-1">
+                    <h3>本月航班數前 5 名</h3>
+                  <p class="fst-italic">C.C. Liu - 24 班次</p><p class="fst-italic">C.H. Chang - 10 班次</p><p class="fst-italic">T.L. Chao - 10 班次</p><p class="fst-italic">C.L. Wu - 8 班次</p><p class="fst-italic">C.H. Chang - 7 班次</p></div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-6" role="tabpanel">
+                <div class="row gy-4">
+                  <div id="statistics-month-duration" class="col-lg-8 details order-2 order-lg-1">
+                    <h3>本月飛行時數前 5 名</h3>
+                  <p class="fst-italic">T.L. Chao - 90 小時</p><p class="fst-italic">C.C. Liu - 47 小時</p><p class="fst-italic">C.H. Chang - 20 小時</p><p class="fst-italic">C.H. Chang - 13 小時</p><p class="fst-italic">H.W. Lin - 9 小時</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <h3>2025/02/02 聯飛紀錄</h3>
+            <div id="map-replay" style="min-height: 200px; height: 100%; width: 100%; position: relative;" class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(-75px, 17px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 15; transform: translate3d(-7811px, -3020px, 0px) scale(16);"></div><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="https://tile.openstreetmap.org/10/853/445.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(77px, -236px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/10/854/445.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(333px, -236px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/10/853/446.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(77px, 20px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/10/854/446.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(333px, 20px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/10/852/445.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-179px, -236px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/10/855/445.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(589px, -236px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/10/852/446.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-179px, 20px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/10/855/446.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(589px, 20px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="HAZ1130" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(-4165px, -6471px, 0px); z-index: -6471;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(275deg); color: black;">flight</span><span class="flight-span">HAZ1130</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="ANA9471" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(8614px, -9248px, 0px); z-index: -9248;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(260deg); color: black;">flight</span><span class="flight-span">ANA9471</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="ANA8888" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(7534px, -8905px, 0px); z-index: -8905;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(253deg); color: black;">flight</span><span class="flight-span">ANA8888</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="ANA12G" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(7906px, -9053px, 0px); z-index: -9053;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(260deg); color: black;">flight</span><span class="flight-span">ANA12G</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="ANA247" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(8858px, -9313px, 0px); z-index: -9313;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(261deg); color: black;">flight</span><span class="flight-span">ANA247</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL001" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(-468px, 369px, 0px); z-index: 369;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(268deg); color: black;">flight</span><span class="flight-span">CAL001</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL225" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(-42px, 327px, 0px); z-index: 327;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(258deg); color: black;">flight</span><span class="flight-span">CAL225</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL906" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(70px, 301px, 0px); z-index: 301;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(257deg); color: black;">flight</span><span class="flight-span">CAL906</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL127" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(-11px, 320px, 0px); z-index: 320;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(258deg); color: black;">flight</span><span class="flight-span">CAL127</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL031" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(267px, 254px, 0px); z-index: 254;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(243deg); color: black;">flight</span><span class="flight-span">CAL031</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL101" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(445px, 140px, 0px); z-index: 140;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(243deg); color: black;">flight</span><span class="flight-span">CAL101</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="ANA388" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(432px, 67px, 0px); z-index: 67;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(229deg); color: black;">flight</span><span class="flight-span">ANA388</span></div></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(218639px, 114276px, 0px) scale(512);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com" title="A JavaScript library for interactive maps"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"></path><path fill="#FFD500" d="M0 4h12v3H0z"></path><path fill="#E0BC00" d="M0 7h12v1H0z"></path></svg> Leaflet</a> <span aria-hidden="true">|</span> © <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a></div></div></div></div>
+          </div>
         </div>
       </div>
-      <div class="form-group">
-        <label for="max-amount">最大金額 (USDT)：</label>
-        <input type="number" id="max-amount" placeholder="例如：1000" value="1000">
-      </div>
-      <div class="form-group">
-        <label for="leverage-input">最大槓桿倍數 (1-XX)：</label>
-        <input type="number" id="leverage-input" placeholder="例如：10">
-      </div>
-      <div class="form-group">
-        <label>交易方向：</label>
-        <div class="radio-group">
-          <input type="radio" name="direction" id="long" value="多" checked="">
-          <label for="long">多</label>
-          <input type="radio" name="direction" id="short" value="空">
-          <label for="short">空</label>
-          <input type="radio" name="direction" id="random-dir" value="隨機">
-          <label for="random-dir">隨機</label>
+
+      <div class="row" style="margin-top: 80px">
+        <div class="col-xl-7 col-lg-6 col-md-5 mt-12 mt-md-0">
+          <div id="live-map" style="min-height: 250px; height: 100%; width: 100%; position: relative;" class="leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(200px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="https://tile.openstreetmap.org/4/13/6.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(89px, -92px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/4/13/7.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(89px, 164px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/4/12/6.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-167px, -92px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/4/14/6.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(345px, -92px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/4/12/7.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-167px, 164px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/4/14/7.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(345px, 164px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/4/11/6.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-423px, -92px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/4/15/6.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(601px, -92px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/4/11/7.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-423px, 164px, 0px); opacity: 1;"><img alt="" src="https://tile.openstreetmap.org/4/15/7.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(601px, 164px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="DAL69" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(470px, -96px, 0px); z-index: -96;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(236deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">DAL69</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="FDX810" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(403px, -49px, 0px); z-index: -49;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(54deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">FDX810</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL721" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(95px, 259px, 0px); z-index: 259;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(213deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">CAL721</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="SJX820" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(348px, 2px, 0px); z-index: 2;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(79deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">SJX820</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CPA564" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(183px, 128px, 0px); z-index: 128;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(37deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">CPA564</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL202" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(201px, 95px, 0px); z-index: 95;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(104deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">CAL202</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CPA420" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(186px, 253px, 0px); z-index: 253;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(330deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">CPA420</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL5168" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(405px, -29px, 0px); z-index: -29;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(47deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">CAL5168</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CPA489" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(159px, 151px, 0px); z-index: 151;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(237deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">CPA489</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CPA479" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(188px, 125px, 0px); z-index: 125;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(319deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">CPA479</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="EVA857" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(105px, 159px, 0px); z-index: 159;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(295deg); color: rgb(41, 180, 115);">flight</span><span class="flight-span">EVA857</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="EVA9604" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(-2305px, -260px, 0px); z-index: -260;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(329deg); color: rgb(13, 44, 153);">flight</span><span class="flight-span">EVA9604</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="EVA1822" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(324px, -6px, 0px); z-index: -6;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(26deg); color: rgb(13, 44, 153);">flight</span><span class="flight-span">EVA1822</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="AFR78PL" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(105px, 160px, 0px); z-index: 160;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(253deg); color: rgb(13, 44, 153);">flight</span><span class="flight-span">AFR78PL</span></div></div><div class="leaflet-marker-icon flight-icon leaflet-zoom-animated leaflet-interactive" title="CAL201" tabindex="0" role="button" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; transform: translate3d(192px, 125px, 0px); z-index: 125;"><div><span class="material-symbols-outlined marker-icon" style="transform: rotate(293deg); color: rgb(13, 44, 153);">flight</span><span class="flight-span">CAL201</span></div></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(3426.5px, 1753px, 0px) scale(8);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div><div class="leaflet-control-fullscreen leaflet-bar leaflet-control"><a class="leaflet-control-fullscreen-button leaflet-bar-part" href="#" title="View Fullscreen"></a></div></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com" title="A JavaScript library for interactive maps"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"></path><path fill="#FFD500" d="M0 4h12v3H0z"></path><path fill="#E0BC00" d="M0 7h12v1H0z"></path></svg> Leaflet</a> <span aria-hidden="true">|</span> © <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a></div></div></div></div>
+        </div>
+        <div class="col-xl-5 col-lg-6 col-md-7 mt-12 mt-md-0">
+          <div class="flip-flap-board">
+            <div id="flip-flap-header">　　班次　　出發　　目的地 離場　　抵達</div>
+            <div id="flip-flap"><div class="flip-flap-row" style="top: 0px;"><div class="flap" style="left: 0px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span>A</span></div><div class="half prev"><span>A</span></div><div class="half back"><span>A</span></div><div class="divider"></div><div class="half front"><span>A</span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span>L</span></div><div class="half prev"><span>L</span></div><div class="half back"><span>L</span></div><div class="divider"></div><div class="half front"><span>L</span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span>7</span></div><div class="half prev"><span>7</span></div><div class="half back"><span>7</span></div><div class="divider"></div><div class="half front"><span>7</span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span>T</span></div><div class="half prev"><span>T</span></div><div class="half back"><span>T</span></div><div class="divider"></div><div class="half front"><span>T</span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span>W</span></div><div class="half prev"><span>W</span></div><div class="half back"><span>W</span></div><div class="divider"></div><div class="half front"><span>W</span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span>M</span></div><div class="half prev"><span>M</span></div><div class="half back"><span>M</span></div><div class="divider"></div><div class="half front"><span>M</span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span>K</span></div><div class="half prev"><span>K</span></div><div class="half back"><span>K</span></div><div class="divider"></div><div class="half front"><span>K</span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span>K</span></div><div class="half prev"><span>K</span></div><div class="half back"><span>K</span></div><div class="divider"></div><div class="half front"><span>K</span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span>5</span></div><div class="half prev"><span>5</span></div><div class="half back"><span>5</span></div><div class="divider"></div><div class="half front"><span>5</span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 18px;"><div class="flap" style="left: 0px;"><div class="half next"><span>F</span></div><div class="half prev"><span>F</span></div><div class="half back"><span>F</span></div><div class="divider"></div><div class="half front"><span>F</span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span>D</span></div><div class="half prev"><span>D</span></div><div class="half back"><span>D</span></div><div class="divider"></div><div class="half front"><span>D</span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span>X</span></div><div class="half prev"><span>X</span></div><div class="half back"><span>X</span></div><div class="divider"></div><div class="half front"><span>X</span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span>8</span></div><div class="half prev"><span>8</span></div><div class="half back"><span>8</span></div><div class="divider"></div><div class="half front"><span>8</span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span>T</span></div><div class="half prev"><span>T</span></div><div class="half back"><span>T</span></div><div class="divider"></div><div class="half front"><span>T</span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span>K</span></div><div class="half prev"><span>K</span></div><div class="half back"><span>K</span></div><div class="divider"></div><div class="half front"><span>K</span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span>L</span></div><div class="half prev"><span>L</span></div><div class="half back"><span>L</span></div><div class="divider"></div><div class="half front"><span>L</span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span>A</span></div><div class="half prev"><span>A</span></div><div class="half back"><span>A</span></div><div class="divider"></div><div class="half front"><span>A</span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span>X</span></div><div class="half prev"><span>X</span></div><div class="half back"><span>X</span></div><div class="divider"></div><div class="half front"><span>X</span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span>9</span></div><div class="half prev"><span>9</span></div><div class="half back"><span>9</span></div><div class="divider"></div><div class="half front"><span>9</span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 36px;"><div class="flap" style="left: 0px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span>A</span></div><div class="half prev"><span>A</span></div><div class="half back"><span>A</span></div><div class="divider"></div><div class="half front"><span>A</span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span>L</span></div><div class="half prev"><span>L</span></div><div class="half back"><span>L</span></div><div class="divider"></div><div class="half front"><span>L</span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span>5</span></div><div class="half prev"><span>5</span></div><div class="half back"><span>5</span></div><div class="divider"></div><div class="half front"><span>5</span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span>6</span></div><div class="half prev"><span>6</span></div><div class="half back"><span>6</span></div><div class="divider"></div><div class="half front"><span>6</span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span>8</span></div><div class="half prev"><span>8</span></div><div class="half back"><span>8</span></div><div class="divider"></div><div class="half front"><span>8</span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span>T</span></div><div class="half prev"><span>T</span></div><div class="half back"><span>T</span></div><div class="divider"></div><div class="half front"><span>T</span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span>A</span></div><div class="half prev"><span>A</span></div><div class="half back"><span>A</span></div><div class="divider"></div><div class="half front"><span>A</span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span>N</span></div><div class="half prev"><span>N</span></div><div class="half back"><span>N</span></div><div class="divider"></div><div class="half front"><span>N</span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span>5</span></div><div class="half prev"><span>5</span></div><div class="half back"><span>5</span></div><div class="divider"></div><div class="half front"><span>5</span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span>9</span></div><div class="half prev"><span>9</span></div><div class="half back"><span>9</span></div><div class="divider"></div><div class="half front"><span>9</span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 54px;"><div class="flap" style="left: 0px;"><div class="half next"><span>E</span></div><div class="half prev"><span>E</span></div><div class="half back"><span>E</span></div><div class="divider"></div><div class="half front"><span>E</span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span>V</span></div><div class="half prev"><span>V</span></div><div class="half back"><span>V</span></div><div class="divider"></div><div class="half front"><span>V</span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span>A</span></div><div class="half prev"><span>A</span></div><div class="half back"><span>A</span></div><div class="divider"></div><div class="half front"><span>A</span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span>8</span></div><div class="half prev"><span>8</span></div><div class="half back"><span>8</span></div><div class="divider"></div><div class="half front"><span>8</span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span>T</span></div><div class="half prev"><span>T</span></div><div class="half back"><span>T</span></div><div class="divider"></div><div class="half front"><span>T</span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span>J</span></div><div class="half prev"><span>J</span></div><div class="half back"><span>J</span></div><div class="divider"></div><div class="half front"><span>J</span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span>5</span></div><div class="half prev"><span>5</span></div><div class="half back"><span>5</span></div><div class="divider"></div><div class="half front"><span>5</span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span>8</span></div><div class="half prev"><span>8</span></div><div class="half back"><span>8</span></div><div class="divider"></div><div class="half front"><span>8</span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 72px;"><div class="flap" style="left: 0px;"><div class="half next"><span>S</span></div><div class="half prev"><span>S</span></div><div class="half back"><span>S</span></div><div class="divider"></div><div class="half front"><span>S</span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span>J</span></div><div class="half prev"><span>J</span></div><div class="half back"><span>J</span></div><div class="divider"></div><div class="half front"><span>J</span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span>X</span></div><div class="half prev"><span>X</span></div><div class="half back"><span>X</span></div><div class="divider"></div><div class="half front"><span>X</span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span>8</span></div><div class="half prev"><span>8</span></div><div class="half back"><span>8</span></div><div class="divider"></div><div class="half front"><span>8</span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span>T</span></div><div class="half prev"><span>T</span></div><div class="half back"><span>T</span></div><div class="divider"></div><div class="half front"><span>T</span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span>J</span></div><div class="half prev"><span>J</span></div><div class="half back"><span>J</span></div><div class="divider"></div><div class="half front"><span>J</span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span>B</span></div><div class="half prev"><span>B</span></div><div class="half back"><span>B</span></div><div class="divider"></div><div class="half front"><span>B</span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span>B</span></div><div class="half prev"><span>B</span></div><div class="half back"><span>B</span></div><div class="divider"></div><div class="half front"><span>B</span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span>5</span></div><div class="half prev"><span>5</span></div><div class="half back"><span>5</span></div><div class="divider"></div><div class="half front"><span>5</span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span>5</span></div><div class="half prev"><span>5</span></div><div class="half back"><span>5</span></div><div class="divider"></div><div class="half front"><span>5</span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span>5</span></div><div class="half prev"><span>5</span></div><div class="half back"><span>5</span></div><div class="divider"></div><div class="half front"><span>5</span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 90px;"><div class="flap" style="left: 0px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span>A</span></div><div class="half prev"><span>A</span></div><div class="half back"><span>A</span></div><div class="divider"></div><div class="half front"><span>A</span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span>8</span></div><div class="half prev"><span>8</span></div><div class="half back"><span>8</span></div><div class="divider"></div><div class="half front"><span>8</span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span>9</span></div><div class="half prev"><span>9</span></div><div class="half back"><span>9</span></div><div class="divider"></div><div class="half front"><span>9</span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span>T</span></div><div class="half prev"><span>T</span></div><div class="half back"><span>T</span></div><div class="divider"></div><div class="half front"><span>T</span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span>V</span></div><div class="half prev"><span>V</span></div><div class="half back"><span>V</span></div><div class="divider"></div><div class="half front"><span>V</span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span>H</span></div><div class="half prev"><span>H</span></div><div class="half back"><span>H</span></div><div class="divider"></div><div class="half front"><span>H</span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span>H</span></div><div class="half prev"><span>H</span></div><div class="half back"><span>H</span></div><div class="divider"></div><div class="half front"><span>H</span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span>H</span></div><div class="half prev"><span>H</span></div><div class="half back"><span>H</span></div><div class="divider"></div><div class="half front"><span>H</span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span>5</span></div><div class="half prev"><span>5</span></div><div class="half back"><span>5</span></div><div class="divider"></div><div class="half front"><span>5</span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 108px;"><div class="flap" style="left: 0px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span>A</span></div><div class="half prev"><span>A</span></div><div class="half back"><span>A</span></div><div class="divider"></div><div class="half front"><span>A</span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span>L</span></div><div class="half prev"><span>L</span></div><div class="half back"><span>L</span></div><div class="divider"></div><div class="half front"><span>L</span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span>S</span></div><div class="half prev"><span>S</span></div><div class="half back"><span>S</span></div><div class="divider"></div><div class="half front"><span>S</span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span>S</span></div><div class="half prev"><span>S</span></div><div class="half back"><span>S</span></div><div class="divider"></div><div class="half front"><span>S</span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span>Z</span></div><div class="half prev"><span>Z</span></div><div class="half back"><span>Z</span></div><div class="divider"></div><div class="half front"><span>Z</span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span>S</span></div><div class="half prev"><span>S</span></div><div class="half back"><span>S</span></div><div class="divider"></div><div class="half front"><span>S</span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span>S</span></div><div class="half prev"><span>S</span></div><div class="half back"><span>S</span></div><div class="divider"></div><div class="half front"><span>S</span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span>S</span></div><div class="half prev"><span>S</span></div><div class="half back"><span>S</span></div><div class="divider"></div><div class="half front"><span>S</span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span>3</span></div><div class="half prev"><span>3</span></div><div class="half back"><span>3</span></div><div class="divider"></div><div class="half front"><span>3</span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span>2</span></div><div class="half prev"><span>2</span></div><div class="half back"><span>2</span></div><div class="divider"></div><div class="half front"><span>2</span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span>3</span></div><div class="half prev"><span>3</span></div><div class="half back"><span>3</span></div><div class="divider"></div><div class="half front"><span>3</span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span>6</span></div><div class="half prev"><span>6</span></div><div class="half back"><span>6</span></div><div class="divider"></div><div class="half front"><span>6</span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 126px;"><div class="flap" style="left: 0px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span>A</span></div><div class="half prev"><span>A</span></div><div class="half back"><span>A</span></div><div class="divider"></div><div class="half front"><span>A</span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span>7</span></div><div class="half prev"><span>7</span></div><div class="half back"><span>7</span></div><div class="divider"></div><div class="half front"><span>7</span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span>9</span></div><div class="half prev"><span>9</span></div><div class="half back"><span>9</span></div><div class="divider"></div><div class="half front"><span>9</span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span>R</span></div><div class="half prev"><span>R</span></div><div class="half back"><span>R</span></div><div class="divider"></div><div class="half front"><span>R</span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span>C</span></div><div class="half prev"><span>C</span></div><div class="half back"><span>C</span></div><div class="divider"></div><div class="half front"><span>C</span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span>T</span></div><div class="half prev"><span>T</span></div><div class="half back"><span>T</span></div><div class="divider"></div><div class="half front"><span>T</span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span>P</span></div><div class="half prev"><span>P</span></div><div class="half back"><span>P</span></div><div class="divider"></div><div class="half front"><span>P</span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span>V</span></div><div class="half prev"><span>V</span></div><div class="half back"><span>V</span></div><div class="divider"></div><div class="half front"><span>V</span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span>H</span></div><div class="half prev"><span>H</span></div><div class="half back"><span>H</span></div><div class="divider"></div><div class="half front"><span>H</span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span>H</span></div><div class="half prev"><span>H</span></div><div class="half back"><span>H</span></div><div class="divider"></div><div class="half front"><span>H</span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span>H</span></div><div class="half prev"><span>H</span></div><div class="half back"><span>H</span></div><div class="divider"></div><div class="half front"><span>H</span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span>4</span></div><div class="half prev"><span>4</span></div><div class="half back"><span>4</span></div><div class="divider"></div><div class="half front"><span>4</span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span>1</span></div><div class="half prev"><span>1</span></div><div class="half back"><span>1</span></div><div class="divider"></div><div class="half front"><span>1</span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span>5</span></div><div class="half prev"><span>5</span></div><div class="half back"><span>5</span></div><div class="divider"></div><div class="half front"><span>5</span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span>3</span></div><div class="half prev"><span>3</span></div><div class="half back"><span>3</span></div><div class="divider"></div><div class="half front"><span>3</span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span>0</span></div><div class="half prev"><span>0</span></div><div class="half back"><span>0</span></div><div class="divider"></div><div class="half front"><span>0</span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 144px;"><div class="flap" style="left: 0px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 162px;"><div class="flap" style="left: 0px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="dot"></div><div class="dot dot-2"></div></div><div class="flip-flap-row" style="top: 180px;"><div class="flap" style="left: 0px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 12px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 24px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 36px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 48px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 60px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 72px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 84px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 96px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 116px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 128px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 143px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 155px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 175px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 187px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 202px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 214px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 234px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 246px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 258px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 270px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 282px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 294px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 306px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="flap" style="left: 318px;"><div class="half next"><span> </span></div><div class="half prev"><span> </span></div><div class="half back"><span> </span></div><div class="divider"></div><div class="half front"><span> </span></div></div><div class="dot"></div><div class="dot dot-2"></div></div></div>
+            <div class="flip-flap-board-footer">本欄資訊僅提供 "VATSIM" 與 "IVAO" 台灣航班</div>
+          </div>
         </div>
       </div>
-      <div class="form-group">
-        <div class="checkbox-group">
-          <!-- 預設打開止盈止損 -->
-          <input type="checkbox" id="random-tp-sl" checked="">
-          <label for="random-tp-sl">隨機止盈止損</label>
+    </section><!-- End Departments Section -->
+
+    <!-- ======= Doctors Section ======= -->
+    <section id="members" class="members">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>成員名單</h2>
+        </div>
+
+        <div id="member-list" class="row">
+
+      <div id="member-cal127" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>C.Y. Liu</h4><span>阿諺</span><p>Pilot</p></div><div class="pic"><img class="img-fluid" width="100" src="assets/img/members/CAL127.jpg" alt=""></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=641226" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1540210" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2021/7/22</div></div></div></div><div id="member-cal831" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>C.H. Chang</h4><span>Ryan</span><p>Pilot(PP) / ATC(APC/S1)</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=674227" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1477356" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2021/7/22</div></div></div></div><div id="member-cal117" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>J.Y Huang</h4><span>Jim</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=668573" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1588231" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2021/7/22</div></div></div></div><div id="member-cal681" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Z.J. Chong</h4><span>Alan</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=656465" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1486100" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2021/7/25</div></div></div></div><div id="member-cal330" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Archie Chang</h4><span>330</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=668121" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1573118" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2021/7/25</div></div></div></div><div id="member-cal030" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>C.C. Liu</h4><span>排球</span><p>Pilot / ATC(I1)</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=468593" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/995723" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2021/7/29</div></div></div></div><div id="member-cal101" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>T.W. Liu</h4><span>Cooper</span><p>Pilot</p></div><div class="pic"><img class="img-fluid" width="100" src="assets/img/members/CAL101.jpg" alt=""></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=700332" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1680139" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2021/8/21</div></div></div></div><div id="member-cal512" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Y.C. Su</h4><span>Tommy</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=673507" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1593005" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2021/8/28</div></div></div></div><div id="member-cal531" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Po-Chun Wu</h4><span>凱多</span><p>Pilot / ATC(S3)</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=633045" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1464608" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2021/10/21</div></div></div></div><div id="member-cal102" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>T.L. Chao</h4><span>天天</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=656529" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1535435" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2022/3/2</div></div></div></div><div id="member-cal744" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>E.T. Liao</h4><span>恩恩</span><p>Pilot / ATC(S1OJT)</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=697872" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1542314" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2022/8/29</div></div></div></div><div id="member-calcal" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>J. Juang</h4><span>GE</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=696896" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1656328" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2022/8/30</div></div></div></div><div id="member-cal1126" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>B.X. Bu</h4><span>Jonny Bu</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=699835" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1696904" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2022/10/10</div></div></div></div><div id="member-cal168" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Y.H. Tai</h4><span>小宇</span><p>Pilot</p></div><div class="pic"><img class="img-fluid" width="100" src="assets/img/members/CAL168.jpg" alt=""></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=699399" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1671762" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2022/11/16</div></div></div></div><div id="member-cal301" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>P.C. Chen</h4><span>James</span><p>Pilot</p></div><div class="pic"><img class="img-fluid" width="100" src="assets/img/members/CAL301.jpg" alt=""></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=690290" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1704611" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/1/26</div></div></div></div><div id="member-cal137" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>X.N. Lu</h4><span>Louis</span><p>Pilot / ATC(S1)</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=692476" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1625128" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/2/4</div></div></div></div><div id="member-cal054" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Y.W. Hsu</h4><span>Dennis</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=711171" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1334152" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/4/21</div></div></div></div><div id="member-cal308" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>W.C. Chan</h4><span>歐姆</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=689792" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1508186" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/5/14</div></div></div></div><div id="member-cal277" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>C.G. Liu</h4><span>阿樺</span><p>Pilot</p></div><div class="pic"><img class="img-fluid" width="100" src="assets/img/members/CAL277.jpg" alt=""></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=648881" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1526872" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/5/29</div></div></div></div><div id="member-cal225" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>C.M. Lin</h4><span>Morris</span><p>Pilot / ATC</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=716099" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1738199" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/7/25</div></div></div></div><div id="member-cal066" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Andy Chang</h4><span>綠綠</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=547392" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1625684" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/9/11</div></div></div></div><div id="member-cal031" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>C.H. Chang</h4><span>ChuHan</span><p>Pilot / ATC</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=719504" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1752512" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/9/18</div></div></div></div><div id="member-cal906" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>T.W. Hu</h4><span>Rory</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=702755" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1684473" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/10/5</div></div></div></div><div id="member-cal079" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>H.L. Chung</h4><span>Eli</span><p>Pilot / ATC</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=709904" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1687801" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2023/11/5</div></div></div></div><div id="member-cal318" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>H.W. Lin</h4><span>Homework</span><p>Pilot / ATC</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=709351" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1586025" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/2/16</div></div></div></div><div id="member-cal123" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>W.L. Liu</h4><span>阿良良</span><p>Pilot / ATC</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=727717" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1774281" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/2/16</div></div></div></div><div id="member-cal702" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>E.T. Lin</h4><span>Anton</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=716083" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1738138" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/6/23</div></div></div></div><div id="member-cal116" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>S.S. Sun</h4><span>Darren</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=716096" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1738172" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/6/23</div></div></div></div><div id="member-cal202" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>C.L. Wu</h4><span>皮蛋</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=735519" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1825030" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/06/25</div></div></div></div><div id="member-cal140" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>C.Y. Chen</h4><span>Jerry</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://stats.vatsim.net/stats/1654972" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/07/10</div></div></div></div><div id="member-cal721" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>H.K. Liu</h4><span>阿逵</span><p>Pilot</p></div><div class="pic"><img class="img-fluid" width="100" src="assets/img/members/CAL721.jpg" alt=""></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=724727" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1703912" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/07/08</div></div></div></div><div id="member-cal602" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>C.W. Fan</h4><span>阿瑋</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=734635" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1590173" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/07/09</div></div></div></div><div id="member-cal121" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Y.L. Hung</h4><span>丹尼爾</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=689455" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1728775" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/07/28</div></div></div></div><div id="member-cal1976" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Y. Che</h4><span>小張</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=739330" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1551751" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/08/12</div></div></div></div><div id="member-cal317" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Z.S. Wu</h4><span>吳子喵</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=708635" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1726310" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/08/17</div></div></div></div><div id="member-cal826" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>H.C. Sung</h4><span>Willie</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=403946" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1855390" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/09/25</div></div></div></div><div id="member-cal709" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Y.C Liu</h4><span>Alan Liu</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=576014" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1399466" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/08/26</div></div></div></div><div id="member-cal526" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>J.J. Lai</h4><span>水梨</span><p>Pilot</p></div><div class="pic"></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=736485" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1726756" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/10/11</div></div></div></div><div id="member-cal312" class="col-xl-4 col-lg-6"><div class="member d-flex"><div class="member-info"><h4>Y.H. Chou</h4><span>JOY</span><p>Pilot</p></div><div class="pic"><img class="img-fluid" width="100" src="assets/img/members/CAL312.jpg" alt=""></div><div class="member-extra"><div class="social"><a href="https://www.ivao.aero/Member.aspx?Id=742700" target="_blank"><img width="24" src="assets/img/icon-ivao.png" style="filter: brightness(0) invert(1);"></a><a href="https://stats.vatsim.net/stats/1785894" target="_blank"><img width="24" src="assets/img/icon-vatsim.png" style="filter: brightness(0) invert(1);"></a></div><div>Joined: 2024/10/02</div></div></div></div></div>
+    </div></section><!-- End Doctors Section -->
+
+    <!-- ======= Frequently Asked Questions Section ======= -->
+    <section id="faq" class="faq section-bg">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>常見問題</h2>
+        </div>
+
+        <div class="faq-list">
+          <ul>
+            <li data-aos="fade-up">
+              <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" class="collapse" data-bs-target="#faq-list-1">什麼是虛擬航空？ <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+              <div id="faq-list-1" class="collapse show" data-bs-parent=".faq-list">
+                <p>
+                  虛擬航空是一個模擬真實航空公司的虛擬網絡，飛行員可以在虛擬天空中飛行，並且可以與其他飛行員與航管進行溝通。
+                </p>
+              </div>
+            </li>
+
+            <li data-aos="fade-up" data-aos-delay="100">
+              <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-2" class="collapsed">會不會被開除？ <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+              <div id="faq-list-2" class="collapse" data-bs-parent=".faq-list">
+                <p>
+                  原則上不會，除非違反本虛擬航空規定。
+                </p>
+              </div>
+            </li>
+
+            <li data-aos="fade-up" data-aos-delay="200">
+              <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-3" class="collapsed">加入後具體來說要做什麼？ <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+              <div id="faq-list-3" class="collapse" data-bs-parent=".faq-list">
+                <p>
+                  在虛擬天空中翱翔，並遵守當地飛行規定
+                </p>
+              </div>
+            </li>
+
+            <li data-aos="fade-up" data-aos-delay="300">
+              <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-4" class="collapsed">有薪水嗎？ <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+              <div id="faq-list-4" class="collapse" data-bs-parent=".faq-list">
+                <p>
+                  當然不會有薪水拉😂，但會不定時發送禮物，年末會舉辦抽獎活動慰勞各位
+                </p>
+              </div>
+            </li>
+
+            <li data-aos="fade-up" data-aos-delay="400">
+              <i class="bx bx-help-circle icon-help"></i> <a data-bs-toggle="collapse" data-bs-target="#faq-list-5" class="collapsed">我飛不好會不會被罵？ <i class="bx bx-chevron-down icon-show"></i><i class="bx bx-chevron-up icon-close"></i></a>
+              <div id="faq-list-5" class="collapse" data-bs-parent=".faq-list">
+                <p>
+                  不會<del>，但可能會被笑</del>，我們是一個友善的社群，歡迎任何人加入，不論您是新手或老手，我們都會以最大的熱情歡迎您的加入。
+                </p>
+              </div>
+            </li>
+
+          </ul>
+        </div>
+
+      </div>
+    </section><!-- End Frequently Asked Questions Section -->
+
+    <!-- ======= Services Section ======= -->
+    <section id="partners" class="services">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>合作夥伴</h2>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch">
+            <a class="icon-box" href="https://vatsim.net/" target="_blank">
+              <div>
+                <img src="assets/img/logo-vatsim.png" width="160">
+              </div>
+              <p>自 2023 年起，正式成為 VATSIM 合作夥伴</p>
+            </a>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch mt-4 mt-md-0">
+            <a class="icon-box" href="https://www.ivao.aero/" target="_blank">
+              <div>
+                <img src="assets/img/logo-ivao.png" width="160">
+              </div>
+              <p>自 2022 年起，正式成為 IVAO 合作夥伴</p>
+            </a>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0">
+            <a class="icon-box" href="https://www.hangzhouva.com/" target="_blank">
+              <div>
+                <img src="assets/img/logo-hangzhou-airlines.png" width="160">
+              </div>
+              <p>自 2023 年起，正式成為杭州航空合作夥伴</p>
+            </a>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0">
+            <a class="icon-box" href="https://anavirtualgroup.com/" target="_blank">
+              <div>
+                <img src="assets/img/logo-ana.png" width="160">
+              </div>
+              <p>自 2024 年起，正式成為全日本空輸合作夥伴</p>
+            </a>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0">
+            <a class="icon-box" href="https://jalvirtual.com/" target="_blank">
+              <div>
+                <img src="assets/img/logo-jal.png" width="160">
+              </div>
+              <p>自 2024 年起，正式成為日本航空合作夥伴</p>
+            </a>
+          </div>
+
+          <div class="col-lg-3 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0">
+            <a class="icon-box" href="https://www.simbrief.com/home/?page=vapartners" target="_blank">
+              <div>
+                <img src="assets/img/logo-simbrief.jpg" width="160">
+              </div>
+              <p>自 2024 年起，正式成為 Simbrief 合作夥伴</p>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </section><!-- End Services Section -->
+
+    <!-- ======= Privacy Section ======= -->
+    <section id="privacy" class="privacy">
+      <div class="container">
+
+        <div class="section-title">
+          <h2>隱私權政策</h2>
+        </div>
+        <div>
+            <h5>資料蒐集</h5>
+            <p>
+                我們將基於虛擬航空公司對飛行員的角度蒐集以下資料:
+                </p><ul>
+                    <li>您的暱稱, 您的英文名縮寫, 您的年齡, IVAO VID, VATSIM CID, 您的聯絡資訊</li>
+                    <li>您飛行的相關紀錄與系統使用紀錄</li>
+                </ul>
+            <p></p>
+            <p>
+                無論您來自任何國家或地區, 您皆有權力要求我們刪除上述提及的資料
+            </p>
+        </div>
+
+  </div></section></main><!-- End #main -->
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer">
+
+    <div class="footer-top">
+      <div class="container">
+        <div class="row">
+
+          <div class="col-lg-3 col-md-6 footer-contact">
+            <h3>中華虛擬航空</h3>
+            <p>
+              <strong>Email:</strong> <img src="assets/img/email.png">
+            </p>
+          </div>
+
+          <div class="col-lg-2 col-md-6 footer-links">
+            <h4>相關連結</h4>
+            <ul>
+              <li><i class="bx bx-chevron-right"></i> <a href="#">Home</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="https://vatsim.net/">VATSIM</a></li>
+              <li><i class="bx bx-chevron-right"></i> <a href="https://ivao.aero/">IVAO</a></li>
+            </ul>
+          </div>
+
         </div>
       </div>
     </div>
-    
-    <!-- 下單投注按鈕 -->
-    <div class="form-group" style="text-align: center;">
-      <button id="roll-button">下單投注</button>
-    </div>
-    
-    <!-- Slot Machine 結果區 -->
-    <div class="slot-machine" id="slot-machine" style="grid-template-columns: repeat(3, 1fr);">
-      <div class="slot" id="slot-token">
-        <div class="slot-header">幣種</div>
-        <div class="slot-content"><div class="reel" style="top: -360px; transition: top 2000ms cubic-bezier(0.33, 1, 0.68, 1);"><div class="slot-item">VIDT</div><div class="slot-item">ENA</div><div class="slot-item">BNT</div><div class="slot-item">OP</div><div class="slot-item">TURBO</div><div class="slot-item">BERA</div><div class="slot-item">APE</div><div class="slot-item">ZEREBRO</div><div class="slot-item">ICP</div><div class="slot-item">XLM</div></div></div>
+
+    <div class="container d-md-flex py-4">
+
+      <div class="me-md-auto text-center text-md-start">
+        <div class="copyright">
+          © Copyright <strong><span>中華虛擬航空</span></strong>. All Rights Reserved
+        </div>
+        <div class="copyright">
+            ※免責聲明※<br>
+            本網頁提供的所有資料、商標、標誌、圖像連結及其他資料等只供學術探討研究，並無任何營利商業用途，與真實航空公司無任何關係。
+        </div>
+        <div class="credits">
+          <!-- All the links in the footer should remain intact. -->
+          <!-- You can delete the links only if you purchased the pro version. -->
+          <!-- Licensing information: https://bootstrapmade.com/license/ -->
+          <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/中華虛擬航空-free-medical-bootstrap-theme/ -->
+          Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+        </div>
       </div>
-      <div class="slot" id="slot-amount">
-        <div class="slot-header">金額</div>
-        <div class="slot-content"><div class="reel" style="top: -360px; transition: top 2500ms cubic-bezier(0.33, 1, 0.68, 1);"><div class="slot-item">666.28</div><div class="slot-item">384.80</div><div class="slot-item">101.98</div><div class="slot-item">570.89</div><div class="slot-item">841.17</div><div class="slot-item">494.20</div><div class="slot-item">339.75</div><div class="slot-item">296.48</div><div class="slot-item">840.40</div><div class="slot-item">897.22</div></div></div>
-      </div>
-      <div class="slot" id="slot-direction">
-        <div class="slot-header">方向</div>
-        <div class="slot-content"><div class="reel" style="top: -360px; transition: top 3000ms cubic-bezier(0.33, 1, 0.68, 1);"><div class="slot-item">空</div><div class="slot-item">多</div><div class="slot-item">空</div><div class="slot-item">多</div><div class="slot-item">空</div><div class="slot-item">空</div><div class="slot-item">多</div><div class="slot-item">空</div><div class="slot-item">多</div><div class="slot-item">多</div></div></div>
-      </div>
-      <div class="slot" id="slot-leverage">
-        <div class="slot-header">槓桿</div>
-        <div class="slot-content"><div class="reel" style="top: -360px; transition: top 2200ms cubic-bezier(0.33, 1, 0.68, 1);"><div class="slot-item">6X</div><div class="slot-item">15X</div><div class="slot-item">19X</div><div class="slot-item">9X</div><div class="slot-item">5X</div><div class="slot-item">11X</div><div class="slot-item">14X</div><div class="slot-item">2X</div><div class="slot-item">11X</div><div class="slot-item">17X</div></div></div>
-      </div>
-      <div class="slot" id="slot-tp">
-        <div class="slot-header">止盈</div>
-        <div class="slot-content"><div class="reel" style="top: -360px; transition: top 3500ms cubic-bezier(0.33, 1, 0.68, 1);"><div class="slot-item">40.5%</div><div class="slot-item">36.3%</div><div class="slot-item">43.6%</div><div class="slot-item">29.3%</div><div class="slot-item">25.2%</div><div class="slot-item">47.7%</div><div class="slot-item">11.9%</div><div class="slot-item">38.9%</div><div class="slot-item">19.2%</div><div class="slot-item">35.1%</div></div></div>
-      </div>
-      <div class="slot" id="slot-sl">
-        <div class="slot-header">止損</div>
-        <div class="slot-content"><div class="reel" style="top: -360px; transition: top 4000ms cubic-bezier(0.33, 1, 0.68, 1);"><div class="slot-item">-31.4%</div><div class="slot-item">-42.8%</div><div class="slot-item">-43.0%</div><div class="slot-item">-26.4%</div><div class="slot-item">-6.2%</div><div class="slot-item">-38.5%</div><div class="slot-item">-30.9%</div><div class="slot-item">-9.3%</div><div class="slot-item">-53.2%</div><div class="slot-item">-39.2%</div></div></div>
+      <div class="social-links text-center text-md-right pt-3 pt-md-0">
+        <a href="https://discord.gg/USDFnDamPG" target="_blank" class="discord"><i class="bx bxl-discord"></i></a>
+        <a href="https://www.facebook.com/groups/596448671760640" target="_blank" class="facebook"><i class="bx bxl-facebook"></i></a>
+        <a href="https://www.instagram.com/china.airlines_virtual" target="_blank" class="instagram"><i class="bx bxl-instagram"></i></a>
       </div>
     </div>
-  </div>
+  </footer><!-- End Footer -->
+
   
-  <!-- 說明與推薦資料區塊 -->
-  <div class="info-section">
-    <table id="tablepress-25">
-      <thead>
-        <tr>
-          <th>交易所</th>
-          <th>優惠折扣</th>
-          <th>推薦邀請碼</th>
-          <th>註冊連結</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>幣安</td>
-          <td>20%手續費回饋</td>
-          <td>X6KZ8VLA</td>
-          <td><a href="https://www.binance.com/zh-TC/join?ref=X6KZ8VLA" target="_blank">點我註冊</a></td>
-        </tr>
-        <tr>
-          <td>OKX</td>
-          <td>20%手續費回饋</td>
-          <td>5244997</td>
-          <td><a href="https://www.okx.com/join/5244997" target="_blank">點我註冊</a></td>
-        </tr>
-        <tr>
-          <td>BingX</td>
-          <td>25%手續費回饋</td>
-          <td>UWMAWOYI</td>
-          <td><a href="https://bingx.com/invite/UWMAWOYI" target="_blank">點我註冊</a></td>
-        </tr>
-        <tr>
-          <td>Bitget</td>
-          <td>20%手續費回饋</td>
-          <td>vqlo3847</td>
-          <td><a href="https://partner.bitget.com/bg/19tpafus" target="_blank">點我註冊</a></td>
-        </tr>
-        <tr>
-          <td>派網</td>
-          <td>20%手續費回饋</td>
-          <td>123</td>
-          <td><a href="https://www.pionex.com/zh-TW/sign/ref/f2Mujca0zT" target="_blank">點我註冊</a></td>
-        </tr>
-        <tr>
-          <td>Bybit</td>
-          <td>送3030體驗金</td>
-          <td>22823</td>
-          <td><a href="https://partner.bybit.com/b/miner" target="_blank">點我註冊</a></td>
-        </tr>
-        <tr>
-          <td>MAX</td>
-          <td>20%手續費回饋</td>
-          <td>96279a70</td>
-          <td><a href="https://max.maicoin.com/signup?r=96279a70" target="_blank">點我註冊</a></td>
-        </tr>
-        <tr>
-          <td>Gate.io</td>
-          <td>20%手續費回饋</td>
-          <td>A1FHUFpW</td>
-          <td><a href="https://www.gate.io/signup/A1FHUFpW?ref_type=103" target="_blank">點我註冊</a></td>
-        </tr>
-        <tr>
-          <td>MEXC</td>
-          <td>20%手續費回饋</td>
-          <td>mexc-miner</td>
-          <td><a href="https://www.mexc.com/zh-TW/register?inviteCode=mexc-miner" target="_blank">點我註冊</a></td>
-        </tr>
-      </tbody>
-    </table>
-    <p style="text-align:center; margin-top:20px; color:#555; font-size:0.95rem;">
-      本網頁僅供娛樂用途，若您有意註冊區塊鏈交易所，歡迎參考上表資料。
-    </p>
-  </div>
-  
-  <script>
-    // 更新 Slot Machine Grid：桌面版依據顯示中 Slot 數量平均分配，手機版固定 3 欄
-    function updateSlotMachineGrid() {
-      const slotMachine = document.getElementById("slot-machine");
-      if (window.innerWidth <= 767) {
-        slotMachine.style.gridTemplateColumns = "repeat(3, 1fr)";
-      } else {
-        const slots = slotMachine.querySelectorAll(".slot");
-        let visibleCount = 0;
-        slots.forEach(slot => {
-          if (window.getComputedStyle(slot).display !== "none") {
-            visibleCount++;
-          }
-        });
-        if (visibleCount < 1) visibleCount = 1;
-        slotMachine.style.gridTemplateColumns = `repeat(${visibleCount}, 1fr)`;
-      }
-    }
-    // 初次更新 Grid 佈局
-    updateSlotMachineGrid();
-    window.addEventListener("resize", updateSlotMachineGrid);
-    
-    // 進階設定切換按鈕
-    const toggleAdvanced = document.getElementById("toggle-advanced");
-    toggleAdvanced.addEventListener("click", function() {
-      const adv = document.getElementById("advanced-settings");
-      if (adv.classList.contains("open")) {
-        adv.classList.remove("open");
-        this.classList.remove("open");
-        this.textContent = "進階設定";
-      } else {
-        adv.classList.add("open");
-        this.classList.add("open");
-        this.textContent = "隱藏設定";
-      }
-      updateSlotMachineGrid();
-    });
-    
-    document.addEventListener("DOMContentLoaded", async function() {
-      // 取得輸入與按鈕元素
-      const tokenInput = document.getElementById("token-input");
-      const randomTokenCheckbox = document.getElementById("random-token-checkbox");
-      const maxAmountInput = document.getElementById("max-amount");
-      const leverageInput = document.getElementById("leverage-input");
-      const directionRadios = document.getElementsByName("direction");
-      const randomTPSLCheckbox = document.getElementById("random-tp-sl");
-      const rollButton = document.getElementById("roll-button");
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
-      // 取得各 slot 的內容區 (僅 .slot-content)
-      const slotTokenContent = document.querySelector("#slot-token .slot-content");
-      const slotAmountContent = document.querySelector("#slot-amount .slot-content");
-      const slotDirectionContent = document.querySelector("#slot-direction .slot-content");
-      const slotLeverageContent = document.querySelector("#slot-leverage .slot-content");
-      const slotTPContent = document.querySelector("#slot-tp .slot-content");
-      const slotSLContent = document.querySelector("#slot-sl .slot-content");
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
 
-      // 當勾選隨機幣種時禁用手動輸入
-      randomTokenCheckbox.addEventListener("change", function() {
-        tokenInput.disabled = this.checked;
-      });
+  <script src="assets/vendor/papa-parse/papaparse.js"></script>
+  <script src="//d3js.org/d3.v4.min.js"></script>
+  <script src="assets/vendor/leaflet/leaflet.js"></script>
+  <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.3.3/backbone-min.js"></script>
 
-      // 當勾選隨機止盈止損時顯示或隱藏對應區塊，並更新 Grid 佈局
-      randomTPSLCheckbox.addEventListener("change", function() {
-        if (this.checked) {
-          document.getElementById("slot-tp").style.display = "block";
-          document.getElementById("slot-sl").style.display = "block";
-        } else {
-          document.getElementById("slot-tp").style.display = "none";
-          document.getElementById("slot-sl").style.display = "none";
-        }
-        updateSlotMachineGrid();
-      });
+  <!-- Template Main JS File -->
+  <script src="assets/js/map-replay.js"></script>
+  <script src="assets/js/flip-flap.js"></script>
+  <script src="assets/js/main.js"></script>
 
-      // 串接 Binance API 取得合約交易幣種
-      async function fetchBinanceFuturesSymbols() {
-        try {
-          const response = await fetch("https://fapi.binance.com/fapi/v1/exchangeInfo");
-          const data = await response.json();
-          const symbols = data.symbols.filter(s => s.quoteAsset === "USDT" && s.status === "TRADING");
-          const tokens = symbols.map(s => s.baseAsset);
-          return [...new Set(tokens)];
-        } catch (err) {
-          console.error("Error fetching Binance futures symbols:", err);
-          return [];
-        }
-      }
 
-      // 初始取得 Binance 幣種資料
-      let binanceTokens = await fetchBinanceFuturesSymbols();
-      if (binanceTokens.length === 0) {
-        binanceTokens = ["BTC", "ETH", "BNB", "ADA", "XRP", "SOL", "DOT", "DOGE"];
-      }
-
-      // 產生隨機金額 (介於 1 ~ 最大金額)
-      function generateRandomAmount(max) {
-        const min = 1;
-        let amt = Math.random() * (max - min) + min;
-        return amt.toFixed(2);
-      }
-
-      // 產生隨機百分比 (1.0% ~ 10.0%)
-      function generateRandomPercentage() {
-        return (Math.random() * 49 + 5).toFixed(1) + "%";
-      }
-
-      // 取得選取的交易方向（使用 Array.from 處理 NodeList）
-      function getSelectedDirection() {
-        let selected = "";
-        Array.from(directionRadios).forEach(function(radio) {
-          if (radio.checked) {
-            selected = radio.value;
-          }
-        });
-        if (selected === "隨機") {
-          selected = Math.random() < 0.5 ? "多" : "空";
-        }
-        return selected;
-      }
-
-      // 根據類型取得隨機中間項目的值
-      function getRandomValue(type, options) {
-        if (type === "token") {
-          return binanceTokens[Math.floor(Math.random() * binanceTokens.length)];
-        } else if (type === "amount") {
-          let maxAmt = (options && options.maxAmount) ? options.maxAmount : 100;
-          return generateRandomAmount(maxAmt);
-        } else if (type === "direction") {
-          return Math.random() < 0.5 ? "多" : "空";
-        } else if (type === "tp") {
-          return generateRandomPercentage();
-        } else if (type === "sl") {
-          return "-" + generateRandomPercentage();
-        } else if (type === "leverage") {
-          let maxLev = (options && options.maxLeverage) ? options.maxLeverage : 20;
-          return (Math.floor(Math.random() * maxLev) + 1) + "X";
-        } else {
-          return "";
-        }
-      }
-
-      // 使用捲軸動畫顯示結果：以改變元素 top 屬性方式（項目數量固定為 10）
-      function rollSlot(slotContent, finalValue, duration, type, options) {
-        slotContent.innerHTML = "";
-        const reel = document.createElement("div");
-        reel.className = "reel";
-        const itemCount = 10;
-        const itemHeight = 40;
-        for (let i = 0; i < itemCount - 1; i++) {
-          const item = document.createElement("div");
-          item.className = "slot-item";
-          item.textContent = getRandomValue(type, options);
-          reel.appendChild(item);
-        }
-        const finalItem = document.createElement("div");
-        finalItem.className = "slot-item";
-        finalItem.textContent = finalValue;
-        reel.appendChild(finalItem);
-        slotContent.appendChild(reel);
-        reel.style.top = "0px";
-        void reel.offsetWidth;
-        reel.style.transition = `top ${duration}ms cubic-bezier(0.33, 1, 0.68, 1)`;
-        const finalTop = - (itemCount - 1) * itemHeight;
-        setTimeout(function() {
-          reel.style.top = `${finalTop}px`;
-        }, 50);
-        reel.addEventListener("transitionend", function() {
-          slotContent.parentElement.classList.add("pop");
-          setTimeout(function() {
-            slotContent.parentElement.classList.remove("pop");
-          }, 500);
-        });
-      }
-
-      // 取得當前價格（傳入 symbol，例如 "BTCUSDT"）
-      async function fetchCurrentPrice(symbol) {
-        try {
-          const response = await fetch("https://fapi.binance.com/fapi/v1/ticker/price?symbol=" + symbol);
-          const data = await response.json();
-          return parseFloat(data.price);
-        } catch (err) {
-          console.error("Error fetching current price:", err);
-          return null;
-        }
-      }
-
-      rollButton.addEventListener("click", async function() {
-        let token = tokenInput.value.trim();
-        if (randomTokenCheckbox.checked || !token) {
-          token = binanceTokens[Math.floor(Math.random() * binanceTokens.length)];
-        }
-        let maxAmt = parseFloat(maxAmountInput.value);
-        if (isNaN(maxAmt) || maxAmt <= 0) { maxAmt = 100; }
-        let amount = generateRandomAmount(maxAmt);
-        let direction = getSelectedDirection();
-        let tp = randomTPSLCheckbox.checked ? generateRandomPercentage() : "";
-        let sl = randomTPSLCheckbox.checked ? "-" + generateRandomPercentage() : "";
-        let maxLeverage = parseInt(leverageInput.value);
-        if (isNaN(maxLeverage) || maxLeverage < 1) { maxLeverage = 20; }
-        let leverageValue = Math.floor(Math.random() * maxLeverage) + 1;
-        
-        const finalTokenValue = token;
-        const finalAmountValue = amount;
-        const finalDirectionValue = direction;
-        const finalLeverageValue = leverageValue + "X";
-        const finalTPValue = tp;
-        const finalSLValue = sl;
-
-        // 啟動捲軸動畫（僅作用於內容區）
-        rollSlot(slotTokenContent, finalTokenValue, 2000, "token");
-        rollSlot(slotAmountContent, finalAmountValue, 2500, "amount", { maxAmount: maxAmt });
-        rollSlot(slotDirectionContent, finalDirectionValue, 3000, "direction");
-        rollSlot(slotLeverageContent, finalLeverageValue, 2200, "leverage", { maxLeverage: maxLeverage });
-        if (randomTPSLCheckbox.checked) {
-          rollSlot(slotTPContent, finalTPValue, 3500, "tp");
-          rollSlot(slotSLContent, finalSLValue, 4000, "sl");
-        }
-        // 更新 Grid 佈局
-        updateSlotMachineGrid();
-
-        // 動畫結束後取得現價並計算止盈止損，再觸發彩帶與 alert 印出結果
-        // setTimeout(async function() {
-        //   let resultMsg = "最終結果：\n幣種：" + finalTokenValue +
-        //                   "\n金額：" + finalAmountValue + " USDT" +
-        //                   "\n方向：" + finalDirectionValue +
-        //                   "\n槓桿：" + finalLeverageValue;
-        //   if (randomTPSLCheckbox.checked) {
-        //     let symbol = finalTokenValue.toUpperCase() + "USDT";
-        //     let currentPrice = await fetchCurrentPrice(symbol);
-        //     if (currentPrice !== null) {
-        //       let tpPerc = parseFloat(finalTPValue.replace("%", ""));
-        //       let slPerc = parseFloat(finalSLValue.replace("%", ""));
-        //       let computedTP, computedSL;
-        //       if (finalDirectionValue === "多") {
-        //         computedTP = currentPrice * (1 + tpPerc / 100);
-        //         computedSL = currentPrice * (1 - slPerc / 100);
-        //       } else { // 空單
-        //         computedTP = currentPrice * (1 - tpPerc / 100);
-        //         computedSL = currentPrice * (1 + slPerc / 100);
-        //       }
-        //       resultMsg += "\n現價：" + currentPrice.toFixed(2) + " USDT";
-        //       resultMsg += "\n止盈：" + finalTPValue + " => " + computedTP.toFixed(2) + " USDT";
-        //       resultMsg += "\n止損：" + finalSLValue + " => " + computedSL.toFixed(2) + " USDT";
-        //     } else {
-        //       resultMsg += "\n無法取得現價";
-        //     }
-        //   }
-        //   confetti({
-        //     particleCount: 100,
-        //     spread: 70,
-        //     origin: { y: 0.6 }
-        //   });
-        //   alert(resultMsg);
-        // }, 4300);
-      });
-    });
-  </script>
 
 
 </body></html>
