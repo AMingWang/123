@@ -152,37 +152,10 @@
         body.night-mode button {
             background-color: #ff5722;
         }
-
-        /* Login Page Styles */
-        .login-container {
-            width: 300px;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-container input {
-            margin-bottom: 15px;
-        }
-
-        .login-container button {
-            width: 100%;
-        }
     </style>
 </head>
 <body>
-    <div class="login-container" id="loginContainer">
-        <h2>登入</h2>
-        <label>用戶名：</label>
-        <input type="text" id="username" placeholder="輸入用戶名" /><br>
-        <label>密碼：</label>
-        <input type="password" id="password" placeholder="輸入密碼" /><br>
-        <button onclick="login()">登入</button>
-        <p id="loginError" style="color: red; display: none;">用戶名或密碼錯誤</p>
-    </div>
-
-    <div class="container" id="mainContainer" style="display: none;">
+    <div class="container">
         <h2>警員案件紀錄系統</h2>
 
         <!-- 夜間模式切換 -->
@@ -233,95 +206,26 @@
     </div>
 
     <script>
-        // 用戶數據（這裡僅為簡單示範，真實情況應該使用安全的認證機制）
-        const users = [
-            { username: "admin", password: "admin123", role: "admin" },
-            { username: "officer", password: "officer123", role: "officer" }
-        ];
-
-        // 登入功能
-        function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            const user = users.find(u => u.username === username && u.password === password);
-
-            if (user) {
-                localStorage.setItem("loggedInUser", JSON.stringify(user));
-                showMainPage(user);
-            } else {
-                document.getElementById("loginError").style.display = "block";
-            }
-        }
-
-        // 顯示主頁
-        function showMainPage(user) {
-            document.getElementById("loginContainer").style.display = "none";
-            document.getElementById("mainContainer").style.display = "block";
-
-            // 管理員角色可編輯與刪除案件
-            if (user.role === "admin") {
-                const buttons = document.querySelectorAll('.card-footer button');
-                buttons.forEach(button => {
-                    button.style.display = 'inline-block';
-                });
-            }
-        }
-
-        // 初始化頁面，檢查用戶是否已經登入
-        window.onload = function() {
-            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-            if (loggedInUser) {
-                showMainPage(loggedInUser);
-            }
-        };
-
         // 開啟夜間模式
         function toggleNightMode() {
             document.body.classList.toggle("night-mode");
         }
 
-        // 提交案件紀錄
-        function submitReport() {
-            const officerName = document.getElementById("officerName").value || "未知警員";
-            const caseTitle = document.getElementById("caseTitle").value || "未命名案件";
-            const caseType = document.getElementById("caseType").value;
-            const caseTime = document.getElementById("caseTime").value || "未填寫";
-            const caseLocation = document.getElementById("caseLocation").value || "未填寫";
-            const personsInvolved = document.getElementById("personsInvolved").value || "無";
-            const caseStatus = document.getElementById("caseStatus").value;
-            const caseDetails = document.getElementById("caseDetails").value;
-            
-            if (!caseDetails) {
-                alert("請輸入案件詳情");
-                return;
-            }
+        // 頁面載入時從 localStorage 讀取案件紀錄
+        window.onload = function() {
+            loadRecords();
+        }
 
-            // 生成自動案件編號（根據時間戳）
-            const caseID = `案件編號-${new Date().getTime()}`;
+        // 從 localStorage 載入案件紀錄
+        function loadRecords() {
+            const records = JSON.parse(localStorage.getItem('caseRecords')) || [];
+            const recordsContainer = document.getElementById('recordsContainer');
+            recordsContainer.innerHTML = '';
 
-            // 格式化日期時間為 24 小時制
-            const formattedTime = new Date(caseTime).toLocaleString('zh-TW', { hour12: false });
-
-            const record = {
-                caseID,
-                officerName,
-                caseTitle,
-                caseType,
-                caseTime,
-                formattedTime,
-                caseLocation,
-                personsInvolved,
-                caseStatus,
-                caseDetails
-            };
-
-            // 儲存案件紀錄到 localStorage
-            saveRecord(record);
-
-            // 創建並顯示案件紀錄
-            const recordElement = createRecordElement(record);
-            const recordsContainer = document.getElementById("recordsContainer");
-            recordsContainer.appendChild(recordElement);
+            records.forEach(record => {
+                const recordElement = createRecordElement(record);
+                recordsContainer.appendChild(recordElement);
+            });
         }
 
         // 儲存紀錄到 localStorage
@@ -353,6 +257,58 @@
             `;
             
             return recordElement;
+        }
+
+        // 提交案件紀錄
+        function submitReport() {
+            const officerName = document.getElementById("officerName").value || "未知警員";
+            const caseTitle = document.getElementById("caseTitle").value || "未命名案件";
+            const caseType = document.getElementById("caseType").value;
+            const caseTime = document.getElementById("caseTime").value || "未填寫";
+            const caseLocation = document.getElementById("caseLocation").value || "未填寫";
+            const personsInvolved = document.getElementById("personsInvolved").value || "無";
+            const caseStatus = document.getElementById("caseStatus").value;
+            const caseDetails = document.getElementById("caseDetails").value;
+            
+            if (!caseDetails) {
+                alert("請輸入案件詳情");
+                return;
+            }
+            
+            // 生成自動案件編號（根據時間戳）
+            const caseID = `案件編號-${new Date().getTime()}`;
+
+            // 格式化日期時間為 24 小時制
+            const formattedTime = new Date(caseTime).toLocaleString('zh-TW', { hour12: false });
+
+            const record = {
+                caseID,
+                officerName,
+                caseTitle,
+                caseType,
+                caseTime,
+                formattedTime,
+                caseLocation,
+                personsInvolved,
+                caseStatus,
+                caseDetails
+            };
+
+            // 儲存案件紀錄到 localStorage
+            saveRecord(record);
+
+            // 創建並顯示案件紀錄
+            const recordElement = createRecordElement(record);
+            const recordsContainer = document.getElementById("recordsContainer");
+            recordsContainer.appendChild(recordElement);
+
+            // 清空表單
+            document.getElementById("officerName").value = '';
+            document.getElementById("caseTitle").value = '';
+            document.getElementById("caseTime").value = '';
+            document.getElementById("caseLocation").value = '';
+            document.getElementById("personsInvolved").value = '';
+            document.getElementById("caseDetails").value = '';
         }
 
         // 刪除案件紀錄
