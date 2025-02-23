@@ -147,21 +147,6 @@
             margin: 5px 0;
         }
 
-        .delete-btn {
-            background-color: #f44336;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            float: right;
-        }
-
-        .delete-btn:hover {
-            background-color: #d32f2f;
-        }
-
     </style>
 </head>
 <body>
@@ -220,8 +205,8 @@
             const recordsContainer = document.getElementById('recordsContainer');
             recordsContainer.innerHTML = '';
 
-            records.forEach(record => {
-                const recordElement = createRecordElement(record);
+            records.forEach((record, index) => {
+                const recordElement = createRecordElement(record, index);
                 recordsContainer.appendChild(recordElement);
             });
         }
@@ -233,16 +218,8 @@
             localStorage.setItem('caseRecords', JSON.stringify(records));
         }
 
-        // 刪除紀錄
-        function deleteRecord(caseID) {
-            let records = JSON.parse(localStorage.getItem('caseRecords')) || [];
-            records = records.filter(record => record.caseID !== caseID);
-            localStorage.setItem('caseRecords', JSON.stringify(records));
-            loadRecords(); // 重新載入顯示紀錄
-        }
-
         // 創建案件紀錄的 HTML 元素
-        function createRecordElement(record) {
+        function createRecordElement(record, index) {
             const recordElement = document.createElement('div');
             recordElement.classList.add('record-item');
             
@@ -256,7 +233,7 @@
                 <p><strong>涉案人員:</strong> ${record.personsInvolved}</p>
                 <p><strong>案件狀態:</strong> ${record.caseStatus}</p>
                 <p><strong>案件詳情:</strong> ${record.caseDetails}</p>
-                <button class="delete-btn" onclick="deleteRecord('${record.caseID}')">刪除紀錄</button>
+                <button onclick="deleteRecord(${index})">刪除紀錄</button>
             `;
             
             return recordElement;
@@ -301,7 +278,7 @@
             saveRecord(record);
 
             // 創建並顯示案件紀錄
-            const recordElement = createRecordElement(record);
+            const recordElement = createRecordElement(record, 0);
             const recordsContainer = document.getElementById("recordsContainer");
             recordsContainer.appendChild(recordElement);
 
@@ -331,10 +308,25 @@
                 }
             })
             .catch(error => {
-                console.error("錯誤:",
-                                console.error("錯誤:", error);
+                console.error("錯誤:", error);
                 alert("提交失敗，請檢查控制台錯誤訊息");
             });
+
+            // 清空表單
+            document.getElementById("officerName").value = '';
+            document.getElementById("caseTitle").value = '';
+            document.getElementById("caseTime").value = '';
+            document.getElementById("caseLocation").value = '';
+            document.getElementById("personsInvolved").value = '';
+            document.getElementById("caseDetails").value = '';
+        }
+
+        // 刪除案件紀錄
+        function deleteRecord(index) {
+            let records = JSON.parse(localStorage.getItem('caseRecords')) || [];
+            records.splice(index, 1); // 刪除指定索引的紀錄
+            localStorage.setItem('caseRecords', JSON.stringify(records));
+            loadRecords(); // 重新載入顯示的案件紀錄
         }
     </script>
 </body>
