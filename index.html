@@ -211,7 +211,10 @@
             
             // 生成自動案件編號（根據時間戳）
             const caseID = `案件編號-${new Date().getTime()}`;
-            
+
+            // 格式化日期時間為 24 小時制
+            const formattedTime = new Date(caseTime).toLocaleString('zh-TW', { hour12: false });
+
             // 創建案件紀錄
             const caseRecord = `
                 <div class="record-item">
@@ -219,7 +222,7 @@
                     <p><strong>案件編號:</strong> ${caseID}</p>
                     <p><strong>警員姓名:</strong> ${officerName}</p>
                     <p><strong>案件類型:</strong> ${caseType}</p>
-                    <p><strong>案件時間:</strong> ${caseTime}</p>
+                    <p><strong>案件時間:</strong> ${formattedTime}</p>
                     <p><strong>案件地點:</strong> ${caseLocation}</p>
                     <p><strong>涉案人員:</strong> ${personsInvolved}</p>
                     <p><strong>案件狀態:</strong> ${caseStatus}</p>
@@ -237,7 +240,7 @@
                 embeds: [
                     {
                         title: "🚔 **警員案件紀錄** 🚔",
-                        description: `**案件編號**: ${caseID}\n**警員姓名**: ${officerName}\n**案件標題**: ${caseTitle}\n**案件類型**: ${caseType}\n**案件時間**: ${caseTime}\n**案件地點**: ${caseLocation}\n**涉案人員**: ${personsInvolved}\n**案件狀態**: ${caseStatus}\n**案件詳情**: ${caseDetails}`,
+                        description: `**案件編號**: ${caseID}\n**警員姓名**: ${officerName}\n**案件標題**: ${caseTitle}\n**案件類型**: ${caseType}\n**案件時間**: ${formattedTime}\n**案件地點**: ${caseLocation}\n**涉案人員**: ${personsInvolved}\n**案件狀態**: ${caseStatus}\n**案件詳情**: ${caseDetails}`,
                         color: 3066993
                     }
                 ]
