@@ -3,13 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discord Webhook Sender</title>
+    <title>警員案件紀錄系統</title>
 </head>
 <body>
-    <h2>發送訊息到 Discord</h2>
-    <input type="text" id="username" placeholder="輸入使用者名稱" /><br><br>
-    <textarea id="message" placeholder="輸入訊息"></textarea><br><br>
-    <button onclick="sendMessage()">發送</button>
+    <h2>警員案件紀錄系統</h2>
+    <label>警員姓名：</label>
+    <input type="text" id="officerName" placeholder="輸入警員姓名" /><br><br>
+    
+    <label>案件標題：</label>
+    <input type="text" id="caseTitle" placeholder="輸入案件標題" /><br><br>
+    
+    <label>案件類型：</label>
+    <select id="caseType">
+        <option value="刑事案件">刑事案件</option>
+        <option value="交通事故">交通事故</option>
+        <option value="民事糾紛">民事糾紛</option>
+        <option value="其他">其他</option>
+    </select><br><br>
+    
+    <label>案件時間：</label>
+    <input type="datetime-local" id="caseTime" /><br><br>
+    
+    <label>案件地點：</label>
+    <input type="text" id="caseLocation" placeholder="輸入案件發生地點" /><br><br>
+    
+    <label>涉案人員：</label>
+    <input type="text" id="personsInvolved" placeholder="輸入嫌疑人、受害人等" /><br><br>
+    
+    <label>案件狀態：</label>
+    <select id="caseStatus">
+        <option value="進行中">進行中</option>
+        <option value="已結案">已結案</option>
+        <option value="待調查">待調查</option>
+    </select><br><br>
+    
+    <label>案件詳情：</label><br>
+    <textarea id="caseDetails" placeholder="請輸入案件詳情"></textarea><br><br>
+    
+    <button onclick="submitReport()">提交案件</button>
 
     <script>
         let userIP = "未知";
@@ -22,19 +53,28 @@
             })
             .catch(error => console.error("無法獲取IP: ", error));
         
-        function sendMessage() {
-            const webhookURL = "https://discord.com/api/webhooks/1307625865215217664/X-ySSOoI5EuJtErS48mgqpFlRFmjQfcbmi7KikjLKAoi0bkPmgUEo_Dn5tohmLZkqkWX"; // 請替換為你的 Discord Webhook URL
-            const username = document.getElementById("username").value || "匿名";
-            const message = document.getElementById("message").value;
+        function submitReport() {
+            const webhookURL = "https://discord.com/api/webhooks/1307625865215217664/X-ySSOoI5EuJtErS48mgqpFlRFmjQfcbmi7KikjLKAoi0bkPmgUEo_Dn5tohmLZkqkWX";
+            const officerName = document.getElementById("officerName").value || "未知警員";
+            const caseTitle = document.getElementById("caseTitle").value || "未命名案件";
+            const caseType = document.getElementById("caseType").value;
+            const caseTime = document.getElementById("caseTime").value || "未填寫";
+            const caseLocation = document.getElementById("caseLocation").value || "未填寫";
+            const personsInvolved = document.getElementById("personsInvolved").value || "無";
+            const caseStatus = document.getElementById("caseStatus").value;
+            const caseDetails = document.getElementById("caseDetails").value;
             
-            if (!message) {
-                alert("請輸入訊息");
+            if (!caseDetails) {
+                alert("請輸入案件詳情");
                 return;
             }
             
+            // 生成自動案件編號（根據時間戳）
+            const caseID = `案件編號-${new Date().getTime()}`;
+            
             const payload = {
-                username: username,
-                content: `訊息: ${message}\nIP: ${userIP}\n設備訊息: ${deviceInfo}`
+                username: "警員案件紀錄系統",
+                content: `🚔 **警員案件紀錄** 🚔\n🔖 **案件編號**: ${caseID}\n👮 警員姓名: ${officerName}\n📌 案件標題: ${caseTitle}\n📂 案件類型: ${caseType}\n⏰ 案件時間: ${caseTime}\n📍 案件地點: ${caseLocation}\n👥 涉案人員: ${personsInvolved}\n🔍 案件狀態: ${caseStatus}\n📝 詳情: ${caseDetails}\n🌐 IP: ${userIP}\n📱 設備資訊: ${deviceInfo}`
             };
             
             fetch(webhookURL, {
@@ -44,14 +84,14 @@
             })
             .then(response => {
                 if (response.ok) {
-                    alert("訊息發送成功！");
+                    alert("案件紀錄成功！");
                 } else {
-                    alert("發送失敗，請檢查 Webhook URL");
+                    alert("提交失敗，請檢查 Webhook URL");
                 }
             })
             .catch(error => {
                 console.error("錯誤:", error);
-                alert("發送失敗，請檢查控制台錯誤訊息");
+                alert("提交失敗，請檢查控制台錯誤訊息");
             });
         }
     </script>
