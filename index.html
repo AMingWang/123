@@ -4,43 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>警員案件紀錄系統</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 60%;
+            max-width: 900px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2a2a2a;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #0056b3;
+            outline: none;
+        }
+
+        button {
+            background-color: #0056b3;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #004080;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .info-box {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .info-box h3 {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #888;
+            margin-top: 30px;
+        }
+
+        .footer a {
+            color: #0056b3;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <h2>警員案件紀錄系統</h2>
-    <label>警員姓名：</label>
-    <input type="text" id="officerName" placeholder="輸入警員姓名" /><br><br>
-    
-    <label>案件標題：</label>
-    <input type="text" id="caseTitle" placeholder="輸入案件標題" /><br><br>
-    
-    <label>案件類型：</label>
-    <select id="caseType">
-        <option value="刑事案件">刑事案件</option>
-        <option value="交通事故">交通事故</option>
-        <option value="民事糾紛">民事糾紛</option>
-        <option value="其他">其他</option>
-    </select><br><br>
-    
-    <label>案件時間：</label>
-    <input type="datetime-local" id="caseTime" /><br><br>
-    
-    <label>案件地點：</label>
-    <input type="text" id="caseLocation" placeholder="輸入案件發生地點" /><br><br>
-    
-    <label>涉案人員：</label>
-    <input type="text" id="personsInvolved" placeholder="輸入嫌疑人、受害人等" /><br><br>
-    
-    <label>案件狀態：</label>
-    <select id="caseStatus">
-        <option value="進行中">進行中</option>
-        <option value="已結案">已結案</option>
-        <option value="待調查">待調查</option>
-    </select><br><br>
-    
-    <label>案件詳情：</label><br>
-    <textarea id="caseDetails" placeholder="請輸入案件詳情"></textarea><br><br>
-    
-    <button onclick="submitReport()">提交案件</button>
+    <div class="container">
+        <h2>警員案件紀錄系統</h2>
+        
+        <label>警員姓名：</label>
+        <input type="text" id="officerName" placeholder="輸入警員姓名" /><br>
+        
+        <label>案件標題：</label>
+        <input type="text" id="caseTitle" placeholder="輸入案件標題" /><br>
+        
+        <label>案件類型：</label>
+        <select id="caseType">
+            <option value="刑事案件">刑事案件</option>
+            <option value="交通事故">交通事故</option>
+            <option value="民事糾紛">民事糾紛</option>
+            <option value="其他">其他</option>
+        </select><br>
+        
+        <label>案件時間：</label>
+        <input type="datetime-local" id="caseTime" /><br>
+        
+        <label>案件地點：</label>
+        <input type="text" id="caseLocation" placeholder="輸入案件發生地點" /><br>
+        
+        <label>涉案人員：</label>
+        <input type="text" id="personsInvolved" placeholder="輸入嫌疑人、受害人等" /><br>
+        
+        <label>案件狀態：</label>
+        <select id="caseStatus">
+            <option value="進行中">進行中</option>
+            <option value="已結案">已結案</option>
+            <option value="待調查">待調查</option>
+        </select><br>
+        
+        <label>案件詳情：</label><br>
+        <textarea id="caseDetails" placeholder="請輸入案件詳情"></textarea><br>
+
+        <button onclick="submitReport()">提交案件</button>
+
+        <div class="info-box" id="infoBox">
+            <h3>案件紀錄訊息</h3>
+            <pre id="caseDetailsPreview">案件資料將在此顯示...</pre>
+        </div>
+    </div>
 
     <script>
         let userIP = "未知";
