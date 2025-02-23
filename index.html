@@ -160,41 +160,51 @@
 
         <!-- 夜間模式切換 -->
         <button onclick="toggleNightMode()">切換夜間模式</button>
+
+        <!-- 管理員登入 -->
+        <div id="adminLogin">
+            <label>請輸入管理員密碼：</label>
+            <input type="password" id="adminPassword" placeholder="輸入密碼" />
+            <button onclick="loginAsAdmin()">登入管理員</button>
+        </div>
         
-        <label>警員姓名：</label>
-        <input type="text" id="officerName" placeholder="輸入警員姓名" /><br>
+        <!-- 管理員登入後的表單 -->
+        <div id="caseForm" style="display:none;">
+            <label>警員姓名：</label>
+            <input type="text" id="officerName" placeholder="輸入警員姓名" /><br>
 
-        <label>案件標題：</label>
-        <input type="text" id="caseTitle" placeholder="輸入案件標題" /><br>
+            <label>案件標題：</label>
+            <input type="text" id="caseTitle" placeholder="輸入案件標題" /><br>
 
-        <label>案件類型：</label>
-        <select id="caseType">
-            <option value="刑事案件">刑事案件</option>
-            <option value="交通事故">交通事故</option>
-            <option value="民事糾紛">民事糾紛</option>
-            <option value="其他">其他</option>
-        </select><br>
+            <label>案件類型：</label>
+            <select id="caseType">
+                <option value="刑事案件">刑事案件</option>
+                <option value="交通事故">交通事故</option>
+                <option value="民事糾紛">民事糾紛</option>
+                <option value="其他">其他</option>
+            </select><br>
 
-        <label>案件時間：</label>
-        <input type="datetime-local" id="caseTime" /><br>
+            <label>案件時間：</label>
+            <input type="datetime-local" id="caseTime" /><br>
 
-        <label>案件地點：</label>
-        <input type="text" id="caseLocation" placeholder="輸入案件發生地點" /><br>
+            <label>案件地點：</label>
+            <input type="text" id="caseLocation" placeholder="輸入案件發生地點" /><br>
 
-        <label>涉案人員：</label>
-        <input type="text" id="personsInvolved" placeholder="輸入嫌疑人、受害人等" /><br>
+            <label>涉案人員：</label>
+            <input type="text" id="personsInvolved" placeholder="輸入嫌疑人、受害人等" /><br>
 
-        <label>案件狀態：</label>
-        <select id="caseStatus">
-            <option value="進行中">進行中</option>
-            <option value="已結案">已結案</option>
-            <option value="待調查">待調查</option>
-        </select><br>
+            <label>案件狀態：</label>
+            <select id="caseStatus">
+                <option value="進行中">進行中</option>
+                <option value="已結案">已結案</option>
+                <option value="待調查">待調查</option>
+            </select><br>
 
-        <label>案件詳情：</label><br>
-        <textarea id="caseDetails" placeholder="請輸入案件詳情"></textarea><br>
+            <label>案件詳情：</label><br>
+            <textarea id="caseDetails" placeholder="請輸入案件詳情"></textarea><br>
 
-        <button onclick="submitReport()">提交案件</button>
+            <button onclick="submitReport()">提交案件</button>
+        </div>
 
         <h3>案件紀錄</h3>
 
@@ -206,9 +216,23 @@
     </div>
 
     <script>
+        const adminPassword = "admin123"; // 設定的管理員密碼
+
         // 開啟夜間模式
         function toggleNightMode() {
             document.body.classList.toggle("night-mode");
+        }
+
+        // 管理員登入
+        function loginAsAdmin() {
+            const password = document.getElementById("adminPassword").value;
+            if (password === adminPassword) {
+                document.getElementById("adminLogin").style.display = "none";
+                document.getElementById("caseForm").style.display = "block";
+                alert("管理員登入成功！");
+            } else {
+                alert("密碼錯誤！");
+            }
         }
 
         // 頁面載入時從 localStorage 讀取案件紀錄
@@ -251,12 +275,17 @@
                 <p><strong>案件狀態:</strong> ${record.caseStatus}</p>
                 <p><strong>案件詳情:</strong> ${record.caseDetails}</p>
                 <div class="card-footer">
-                    <button onclick="editRecord('${record.caseID}')">編輯</button>
+                    ${isAdmin() ? '<button onclick="editRecord(\'' + record.caseID + '\')">編輯</button>' : ''}
                     <button onclick="deleteRecord('${record.caseID}')">刪除</button>
                 </div>
             `;
             
             return recordElement;
+        }
+
+        // 檢查是否是管理員
+        function isAdmin() {
+            return document.getElementById("adminLogin").style.display === "none";
         }
 
         // 提交案件紀錄
