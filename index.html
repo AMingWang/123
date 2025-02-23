@@ -147,6 +147,21 @@
             margin: 5px 0;
         }
 
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            float: right;
+        }
+
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+
     </style>
 </head>
 <body>
@@ -218,6 +233,14 @@
             localStorage.setItem('caseRecords', JSON.stringify(records));
         }
 
+        // 刪除紀錄
+        function deleteRecord(caseID) {
+            let records = JSON.parse(localStorage.getItem('caseRecords')) || [];
+            records = records.filter(record => record.caseID !== caseID);
+            localStorage.setItem('caseRecords', JSON.stringify(records));
+            loadRecords(); // 重新載入顯示紀錄
+        }
+
         // 創建案件紀錄的 HTML 元素
         function createRecordElement(record) {
             const recordElement = document.createElement('div');
@@ -233,6 +256,7 @@
                 <p><strong>涉案人員:</strong> ${record.personsInvolved}</p>
                 <p><strong>案件狀態:</strong> ${record.caseStatus}</p>
                 <p><strong>案件詳情:</strong> ${record.caseDetails}</p>
+                <button class="delete-btn" onclick="deleteRecord('${record.caseID}')">刪除紀錄</button>
             `;
             
             return recordElement;
@@ -307,18 +331,4 @@
                 }
             })
             .catch(error => {
-                console.error("錯誤:", error);
-                alert("提交失敗，請檢查控制台錯誤訊息");
-            });
-
-            // 清空表單
-            document.getElementById("officerName").value = '';
-            document.getElementById("caseTitle").value = '';
-            document.getElementById("caseTime").value = '';
-            document.getElementById("caseLocation").value = '';
-            document.getElementById("personsInvolved").value = '';
-            document.getElementById("caseDetails").value = '';
-        }
-    </script>
-</body>
-</html>
+                console.error("錯誤:",
