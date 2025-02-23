@@ -194,16 +194,6 @@
     </div>
 
     <script>
-        let userIP = "未知";
-        let deviceInfo = navigator.userAgent;
-        
-        fetch('https://api64.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => {
-                userIP = data.ip;
-            })
-            .catch(error => console.error("無法獲取IP: ", error));
-        
         function submitReport() {
             const officerName = document.getElementById("officerName").value || "未知警員";
             const caseTitle = document.getElementById("caseTitle").value || "未命名案件";
@@ -234,13 +224,41 @@
                     <p><strong>涉案人員:</strong> ${personsInvolved}</p>
                     <p><strong>案件狀態:</strong> ${caseStatus}</p>
                     <p><strong>案件詳情:</strong> ${caseDetails}</p>
-                    <p><strong>用戶IP:</strong> ${userIP}</p>
-                    <p><strong>設備資訊:</strong> ${deviceInfo}</p>
                 </div>
             `;
             
             // 顯示案件紀錄
             document.getElementById("recordsContainer").innerHTML += caseRecord;
+
+            // 提交至 Discord Webhook
+            const webhookURL = "https://discord.com/api/webhooks/1307625865215217664/X-ySSOoI5EuJtErS48mgqpFlRFmjQfcbmi7KikjLKAoi0bkPmgUEo_Dn5tohmLZkqkWX";
+            const payload = {
+                username: "警員案件紀錄系統",
+                embeds: [
+                    {
+                        title: "🚔 **警員案件紀錄** 🚔",
+                        description: `**案件編號**: ${caseID}\n**警員姓名**: ${officerName}\n**案件標題**: ${caseTitle}\n**案件類型**: ${caseType}\n**案件時間**: ${caseTime}\n**案件地點**: ${caseLocation}\n**涉案人員**: ${personsInvolved}\n**案件狀態**: ${caseStatus}\n**案件詳情**: ${caseDetails}`,
+                        color: 3066993
+                    }
+                ]
+            };
+            
+            fetch(webhookURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("案件紀錄成功！");
+                } else {
+                    alert("提交失敗，請檢查 Webhook URL");
+                }
+            })
+            .catch(error => {
+                console.error("錯誤:", error);
+                alert("提交失敗，請檢查控制台錯誤訊息");
+            });
 
             // 清空表單
             document.getElementById("officerName").value = '';
