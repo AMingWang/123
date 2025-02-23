@@ -160,7 +160,16 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="loginContainer">
+        <h2>登入</h2>
+        <label>帳號：</label>
+        <input type="text" id="username" placeholder="輸入帳號" /><br>
+        <label>密碼：</label>
+        <input type="password" id="password" placeholder="輸入密碼" /><br>
+        <button onclick="login()">登入</button>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
         <h2>警員案件紀錄系統</h2>
 
         <!-- 夜間模式切換 -->
@@ -211,6 +220,10 @@
     </div>
 
     <script>
+        const ADMIN_CREDENTIALS = { username: "admin", password: "admin123" };
+        const OFFICER_CREDENTIALS = { username: "officer", password: "officer123" };
+        let currentUserRole = '';
+
         // 開啟夜間模式
         function toggleNightMode() {
             document.body.classList.toggle("night-mode");
@@ -218,7 +231,27 @@
 
         // 頁面載入時從 localStorage 讀取案件紀錄
         window.onload = function() {
-            loadRecords();
+            if (currentUserRole !== '') {
+                loadRecords();
+            }
+        }
+
+        // 登入函數
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                currentUserRole = 'admin';
+            } else if (username === OFFICER_CREDENTIALS.username && password === OFFICER_CREDENTIALS.password) {
+                currentUserRole = 'officer';
+            } else {
+                alert("帳號或密碼錯誤！");
+                return;
+            }
+
+            document.getElementById("loginContainer").style.display = 'none';
+            document.getElementById("mainContainer").style.display = 'block';
         }
 
         // 從 localStorage 載入案件紀錄
@@ -257,16 +290,11 @@
                 <p><strong>案件詳情:</strong> ${record.caseDetails}</p>
                 <div class="card-footer">
                     <button onclick="editRecord('${record.caseID}')">編輯</button>
-                    ${isAdmin() ? `<button onclick="deleteRecord('${record.caseID}')">刪除</button>` : ''}
+                    ${currentUserRole === 'admin' ? `<button onclick="deleteRecord('${record.caseID}')">刪除</button>` : ''}
                 </div>
             `;
             
             return recordElement;
-        }
-
-        // 檢查是否是管理員
-        function isAdmin() {
-            return localStorage.getItem('userRole') === 'admin';
         }
 
         // 提交案件紀錄
