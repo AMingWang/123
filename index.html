@@ -305,7 +305,6 @@
                 <p><strong>案件地點:</strong> ${record.caseLocation}</p>
                 <p><strong>涉案人員:</strong> ${record.personsInvolved}</p>
                 <p><strong>案件狀態:</strong> ${record.caseStatus}</p>
-                <p><strong>案件詳情:</strong> ${record.caseDetails}</p>
                 <div class="card-footer">
                     ${currentUser === "admin" ? `<button onclick="editRecord('${record.caseID}')">編輯</button>
                     <button onclick="deleteRecord('${record.caseID}')">刪除</button>` : ''}
@@ -353,23 +352,24 @@
             // 儲存案件紀錄
             saveRecord(record);
 
-            // 發送資料到 Discord Webhook
+            // 發送案件資料到 Discord
             sendToDiscord(record);
-            
+
             // 重新載入紀錄
             loadRecords();
             
             // 清空輸入框
             document.getElementById("officerName").value = '';
             document.getElementById("caseTitle").value = '';
-            document.getElementById("caseType").value = '';
+            document.getElementById("caseType").value = '刑事案件';
             document.getElementById("caseTime").value = '';
             document.getElementById("caseLocation").value = '';
             document.getElementById("personsInvolved").value = '';
+            document.getElementById("caseStatus").value = '進行中';
             document.getElementById("caseDetails").value = '';
         }
 
-        // 發送資料到 Discord Webhook
+        // 發送案件紀錄到 Discord
         function sendToDiscord(record) {
             const webhookURL = 'https://discord.com/api/webhooks/1307625865215217664/X-ySSOoI5EuJtErS48mgqpFlRFmjQfcbmi7KikjLKAoi0bkPmgUEo_Dn5tohmLZkqkWX'; // 你的 Discord Webhook URL
             const embed = {
@@ -426,8 +426,7 @@
                         "icon_url": "https://cdn.discordapp.com/attachments/1043916196350804060/1343556776079130707/IMG_0379.png?ex=67bdb441&is=67bc62c1&hm=0c55fd1c067f8141186f921b23990ae61a408e1f4c76501df140ab0a96cc0c0b&"  // 可以換成你的機構 logo
                     }
                 }]
-            };
-
+            }; 
             fetch(webhookURL, {
                 method: 'POST',
                 headers: {
@@ -435,35 +434,9 @@
                 },
                 body: JSON.stringify(embed)
             })
-            .then(response => {
-                if (response.ok) {
-                    console.log('消息已成功發送到 Discord');
-                } else {
-                    console.error('發送 Discord Webhook 失敗');
-                }
-            })
-            .catch(error => {
-                console.error('錯誤:', error);
-            });
-        }
-
-        // 搜尋案件紀錄
-        function searchRecords() {
-            const searchQuery = document.getElementById('search').value.toLowerCase();
-            const records = JSON.parse(localStorage.getItem('caseRecords')) || [];
-            const filteredRecords = records.filter(record => 
-                record.caseTitle.toLowerCase().includes(searchQuery) || 
-                record.caseID.toLowerCase().includes(searchQuery) || 
-                record.caseDetails.toLowerCase().includes(searchQuery)
-            );
-
-            const recordsContainer = document.getElementById('recordsContainer');
-            recordsContainer.innerHTML = '';
-
-            filteredRecords.forEach(record => {
-                const recordElement = createRecordElement(record);
-                recordsContainer.appendChild(recordElement);
-            });
+            .then(response => response.json())
+            .then(data => console.log('成功發送到 Discord', data))
+            .catch(error => console.error('發送到 Discord 失敗', error));
         }
     </script>
 </body>
