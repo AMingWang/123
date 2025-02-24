@@ -296,7 +296,7 @@
             const recordElement = document.createElement('div');
             recordElement.classList.add('record-item');
             
-            recordElement.innerHTML = `
+            recordElement.innerHTML = 
                 <h3>${record.caseTitle}</h3>
                 <p><strong>案件編號:</strong> ${record.caseID}</p>
                 <p><strong>警員姓名:</strong> ${record.officerName}</p>
@@ -307,10 +307,10 @@
                 <p><strong>案件狀態:</strong> ${record.caseStatus}</p>
                 <p><strong>案件詳情:</strong> ${record.caseDetails}</p>
                 <div class="card-footer">
-                    ${currentUser === "admin" ? `<button onclick="editRecord('${record.caseID}')">編輯</button>
-                    <button onclick="deleteRecord('${record.caseID}')">刪除</button>` : ''}
+                    ${currentUser === "admin" ? <button onclick="editRecord('${record.caseID}')">編輯</button>
+                    <button onclick="deleteRecord('${record.caseID}')">刪除</button> : ''}
                 </div>
-            `;
+            ;
             
             return recordElement;
         }
@@ -332,7 +332,7 @@
             }
             
             // 生成自動案件編號（根據時間戳）
-            const caseID = `案件編號-${new Date().getTime()}`;
+            const caseID = 案件編號-${new Date().getTime()};
 
             // 格式化日期時間為 24 小時制
             const formattedTime = new Date(caseTime).toLocaleString('zh-TW', { hour12: false });
@@ -374,8 +374,8 @@
             const webhookURL = 'https://discord.com/api/webhooks/1307625865215217664/X-ySSOoI5EuJtErS48mgqpFlRFmjQfcbmi7KikjLKAoi0bkPmgUEo_Dn5tohmLZkqkWX'; // 你的 Discord Webhook URL
             const embed = {
                 "embeds": [{
-                    "title": `📋 案件紀錄 - ${record.caseTitle}`,
-                    "description": `**案件詳情：** ${record.caseDetails}`,
+                    "title": 📋 案件紀錄 - ${record.caseTitle},
+                    "description": **案件詳情：** ${record.caseDetails},
                     "color": 7506394, // 藍色
                     "fields": [
                         {
@@ -415,7 +415,7 @@
                         }
                     ],
                     "footer": {
-                        "text": `警員案件紀錄系統 | 上傳時間: ${new Date().toLocaleString()}`,
+                        "text": 警員案件紀錄系統 | 上傳時間: ${new Date().toLocaleString()},
                         "icon_url": "https://example.com/your-logo.png"  // 可以換成你的 LOGO 圖示
                     },
                     "thumbnail": {
