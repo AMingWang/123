@@ -350,52 +350,116 @@
                 caseDetails
             };
 
-            // 儲存案件紀錄到 localStorage
+            // 儲存案件紀錄
             saveRecord(record);
 
-            // 創建並顯示案件紀錄
-            const recordElement = createRecordElement(record);
-            const recordsContainer = document.getElementById("recordsContainer");
-            recordsContainer.appendChild(recordElement);
-        }
-
-        // 刪除案件紀錄
-        function deleteRecord(caseID) {
-            let records = JSON.parse(localStorage.getItem('caseRecords')) || [];
-            records = records.filter(record => record.caseID !== caseID);
-            localStorage.setItem('caseRecords', JSON.stringify(records));
+            // 發送資料到 Discord Webhook
+            sendToDiscord(record);
+            
+            // 重新載入紀錄
             loadRecords();
+            
+            // 清空輸入框
+            document.getElementById("officerName").value = '';
+            document.getElementById("caseTitle").value = '';
+            document.getElementById("caseType").value = '';
+            document.getElementById("caseTime").value = '';
+            document.getElementById("caseLocation").value = '';
+            document.getElementById("personsInvolved").value = '';
+            document.getElementById("caseDetails").value = '';
         }
 
-        // 編輯案件紀錄
-        function editRecord(caseID) {
-            let records = JSON.parse(localStorage.getItem('caseRecords')) || [];
-            const record = records.find(record => record.caseID === caseID);
-            if (record) {
-                document.getElementById("officerName").value = record.officerName;
-                document.getElementById("caseTitle").value = record.caseTitle;
-                document.getElementById("caseType").value = record.caseType;
-                document.getElementById("caseTime").value = record.caseTime;
-                document.getElementById("caseLocation").value = record.caseLocation;
-                document.getElementById("personsInvolved").value = record.personsInvolved;
-                document.getElementById("caseStatus").value = record.caseStatus;
-                document.getElementById("caseDetails").value = record.caseDetails;
-                deleteRecord(caseID);
-            }
+        // 發送資料到 Discord Webhook
+        function sendToDiscord(record) {
+            const webhookURL = 'https://discord.com/api/webhooks/1307625865215217664/X-ySSOoI5EuJtErS48mgqpFlRFmjQfcbmi7KikjLKAoi0bkPmgUEo_Dn5tohmLZkqkWX'; // 你的 Discord Webhook URL
+            const embed = {
+                "embeds": [{
+                    "title": `📋 案件紀錄 - ${record.caseTitle}`,
+                    "description": `**案件詳情：** ${record.caseDetails}`,
+                    "color": 7506394, // 藍色
+                    "fields": [
+                        {
+                            "name": "案件編號",
+                            "value": record.caseID,
+                            "inline": true
+                        },
+                        {
+                            "name": "警員姓名",
+                            "value": record.officerName,
+                            "inline": true
+                        },
+                        {
+                            "name": "案件類型",
+                            "value": record.caseType,
+                            "inline": true
+                        },
+                        {
+                            "name": "案件時間",
+                            "value": record.formattedTime,
+                            "inline": true
+                        },
+                        {
+                            "name": "案件地點",
+                            "value": record.caseLocation,
+                            "inline": true
+                        },
+                        {
+                            "name": "涉案人員",
+                            "value": record.personsInvolved,
+                            "inline": true
+                        },
+                        {
+                            "name": "案件狀態",
+                            "value": record.caseStatus,
+                            "inline": true
+                        }
+                    ],
+                    "footer": {
+                        "text": `警員案件紀錄系統 | 上傳時間: ${new Date().toLocaleString()}`,
+                        "icon_url": "https://example.com/your-logo.png"  // 可以換成你的 LOGO 圖示
+                    },
+                    "thumbnail": {
+                        "url": "https://example.com/thumbnail-image.png"  // 如果有圖片或圖示可以顯示
+                    },
+                    "author": {
+                        "name": "警務機構名稱",  // 你的機構名稱
+                        "icon_url": "https://example.com/your-agency-logo.png"  // 可以換成你的機構 logo
+                    }
+                }]
+            };
+
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(embed)
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('消息已成功發送到 Discord');
+                } else {
+                    console.error('發送 Discord Webhook 失敗');
+                }
+            })
+            .catch(error => {
+                console.error('錯誤:', error);
+            });
         }
 
-        // 搜尋案件
+        // 搜尋案件紀錄
         function searchRecords() {
-            const query = document.getElementById("search").value.toLowerCase();
+            const searchQuery = document.getElementById('search').value.toLowerCase();
             const records = JSON.parse(localStorage.getItem('caseRecords')) || [];
             const filteredRecords = records.filter(record => 
-                record.caseTitle.toLowerCase().includes(query) || 
-                record.officerName.toLowerCase().includes(query) || 
-                record.caseStatus.toLowerCase().includes(query)
+                record.caseTitle.toLowerCase().includes(searchQuery) || 
+                record.caseID.toLowerCase().includes(searchQuery) || 
+                record.caseDetails.toLowerCase().includes(searchQuery)
             );
-            
+
             const recordsContainer = document.getElementById('recordsContainer');
             recordsContainer.innerHTML = '';
+
             filteredRecords.forEach(record => {
                 const recordElement = createRecordElement(record);
                 recordsContainer.appendChild(recordElement);
