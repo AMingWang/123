@@ -50,11 +50,6 @@
             box-sizing: border-box;
         }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: #0056b3;
-            outline: none;
-        }
-
         button {
             background-color: #0056b3;
             color: white;
@@ -70,31 +65,20 @@
             background-color: #004080;
         }
 
-        textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-
-        .info-box {
-            padding: 15px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-top: 20px;
-            font-family: 'Courier New', Courier, monospace;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
         .footer {
             text-align: center;
             color: #888;
             margin-top: 30px;
         }
+        
+        /* Night mode */
+        body.night-mode {
+            background-color: #333;
+            color: #fff;
+        }
 
-        .footer a {
-            color: #0056b3;
-            text-decoration: none;
+        body.night-mode .container {
+            background-color: #444;
         }
 
         .records-container {
@@ -114,55 +98,11 @@
             display: flex;
             flex-direction: column;
         }
-
-        .record-item h3 {
-            margin-top: 0;
-            font-size: 18px;
-        }
-
-        .record-item p {
-            margin: 5px 0;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .card-footer button {
-            background-color: #f44336;
-            margin-left: 5px;
-        }
-
-        /* Night mode */
-        body.night-mode {
-            background-color: #333;
-            color: #fff;
-        }
-
-        body.night-mode .container {
-            background-color: #444;
-        }
-
-        body.night-mode .record-item {
-            background-color: #555;
-            color: #fff;
-        }
-
-        body.night-mode button {
-            background-color: #ff5722;
-        }
-
-        .admin-only {
-            display: none;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>警員案件紀錄系統</h2>
-
-        <button onclick="toggleNightMode()">切換夜間模式</button>
 
         <!-- 登入區域 -->
         <div id="loginArea">
@@ -213,32 +153,17 @@
 
             <h3>案件紀錄</h3>
 
-            <input type="text" id="search" placeholder="搜尋案件" oninput="searchRecords()" /><br>
-
-            <div class="records-container" id="recordsContainer">
-                <!-- 顯示提交的案件紀錄 -->
-            </div>
+            <div class="records-container" id="recordsContainer"></div>
         </div>
     </div>
 
     <script>
-        let currentUser = null;
-
-        // 開啟夜間模式
-        function toggleNightMode() {
-            document.body.classList.toggle("night-mode");
-        }
-
-        // 登入驗證
+        // 登入
         function login() {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
             if (username === "admin" && password === "admin123") {
-                currentUser = "admin";
-                showMainContent();
-            } else if (username === "officer" && password === "officer123") {
-                currentUser = "officer";
                 showMainContent();
             } else {
                 alert("帳號或密碼錯誤");
@@ -249,70 +174,12 @@
         function showMainContent() {
             document.getElementById("loginArea").style.display = "none";
             document.getElementById("mainContent").style.display = "block";
-
-            // 管理員可以編輯、刪除
-            if (currentUser === "admin") {
-                document.querySelectorAll(".admin-only").forEach(el => el.style.display = "inline");
-            } else {
-                document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
-            }
-
-            loadRecords();
         }
 
         // 登出
         function logout() {
-            currentUser = null;
             document.getElementById("loginArea").style.display = "block";
             document.getElementById("mainContent").style.display = "none";
-        }
-
-        // 頁面載入時從 localStorage 讀取案件紀錄
-        window.onload = function() {
-            loadRecords();
-        }
-
-        // 從 localStorage 載入案件紀錄
-        function loadRecords() {
-            const records = JSON.parse(localStorage.getItem('caseRecords')) || [];
-            const recordsContainer = document.getElementById('recordsContainer');
-            recordsContainer.innerHTML = '';
-
-            records.forEach(record => {
-                const recordElement = createRecordElement(record);
-                recordsContainer.appendChild(recordElement);
-            });
-        }
-
-        // 儲存紀錄到 localStorage
-        function saveRecord(record) {
-            let records = JSON.parse(localStorage.getItem('caseRecords')) || [];
-            records.push(record);
-            localStorage.setItem('caseRecords', JSON.stringify(records));
-        }
-
-        // 創建案件紀錄的 HTML 元素
-        function createRecordElement(record) {
-            const recordElement = document.createElement('div');
-            recordElement.classList.add('record-item');
-            
-            recordElement.innerHTML = 
-                <h3>${record.caseTitle}</h3>
-                <p><strong>案件編號:</strong> ${record.caseID}</p>
-                <p><strong>警員姓名:</strong> ${record.officerName}</p>
-                <p><strong>案件類型:</strong> ${record.caseType}</p>
-                <p><strong>案件時間:</strong> ${record.formattedTime}</p>
-                <p><strong>案件地點:</strong> ${record.caseLocation}</p>
-                <p><strong>涉案人員:</strong> ${record.personsInvolved}</p>
-                <p><strong>案件狀態:</strong> ${record.caseStatus}</p>
-                <p><strong>案件詳情:</strong> ${record.caseDetails}</p>
-                <div class="card-footer">
-                    ${currentUser === "admin" ? <button onclick="editRecord('${record.caseID}')">編輯</button>
-                    <button onclick="deleteRecord('${record.caseID}')">刪除</button> : ''}
-                </div>
-            ;
-            
-            return recordElement;
         }
 
         // 提交案件紀錄
@@ -330,11 +197,8 @@
                 alert("請輸入案件詳情");
                 return;
             }
-            
-            // 生成自動案件編號（根據時間戳）
-            const caseID = 案件編號-${new Date().getTime()};
 
-            // 格式化日期時間為 24 小時制
+            const caseID = `案件編號-${new Date().getTime()}`;
             const formattedTime = new Date(caseTime).toLocaleString('zh-TW', { hour12: false });
 
             const record = {
@@ -350,120 +214,50 @@
                 caseDetails
             };
 
-            // 儲存案件紀錄
+            // 儲存到 localStorage
             saveRecord(record);
 
-            // 發送資料到 Discord Webhook
+            // 發送 Webhook
             sendToDiscord(record);
-            
-            // 重新載入紀錄
-            loadRecords();
-            
-            // 清空輸入框
-            document.getElementById("officerName").value = '';
-            document.getElementById("caseTitle").value = '';
-            document.getElementById("caseType").value = '';
-            document.getElementById("caseTime").value = '';
-            document.getElementById("caseLocation").value = '';
-            document.getElementById("personsInvolved").value = '';
-            document.getElementById("caseDetails").value = '';
         }
 
-        // 發送資料到 Discord Webhook
+        // 儲存案件紀錄
+        function saveRecord(record) {
+            let records = JSON.parse(localStorage.getItem('caseRecords')) || [];
+            records.push(record);
+            localStorage.setItem('caseRecords', JSON.stringify(records));
+        }
+
+        // 發送到 Discord Webhook
         function sendToDiscord(record) {
-            const webhookURL = 'https://discord.com/api/webhooks/1307625865215217664/X-ySSOoI5EuJtErS48mgqpFlRFmjQfcbmi7KikjLKAoi0bkPmgUEo_Dn5tohmLZkqkWX'; // 你的 Discord Webhook URL
-            const embed = {
-                "embeds": [{
-                    "title": 📋 案件紀錄 - ${record.caseTitle},
-                    "description": **案件詳情：** ${record.caseDetails},
-                    "color": 7506394, // 藍色
-                    "fields": [
-                        {
-                            "name": "案件編號",
-                            "value": record.caseID,
-                            "inline": true
-                        },
-                        {
-                            "name": "警員姓名",
-                            "value": record.officerName,
-                            "inline": true
-                        },
-                        {
-                            "name": "案件類型",
-                            "value": record.caseType,
-                            "inline": true
-                        },
-                        {
-                            "name": "案件時間",
-                            "value": record.formattedTime,
-                            "inline": true
-                        },
-                        {
-                            "name": "案件地點",
-                            "value": record.caseLocation,
-                            "inline": true
-                        },
-                        {
-                            "name": "涉案人員",
-                            "value": record.personsInvolved,
-                            "inline": true
-                        },
-                        {
-                            "name": "案件狀態",
-                            "value": record.caseStatus,
-                            "inline": true
-                        }
-                    ],
-                    "footer": {
-                        "text": 警員案件紀錄系統 | 上傳時間: ${new Date().toLocaleString()},
-                        "icon_url": "https://example.com/your-logo.png"  // 可以換成你的 LOGO 圖示
-                    },
-                    "thumbnail": {
-                        "url": "https://example.com/thumbnail-image.png"  // 如果有圖片或圖示可以顯示
-                    },
-                    "author": {
-                        "name": "警務機構名稱",  // 你的機構名稱
-                        "icon_url": "https://example.com/your-agency-logo.png"  // 可以換成你的機構 logo
+            const webhookURL = "https://discord.com/api/webhooks/1307625865215217664/X-ySSOoI5EuJtErS48mgqpFlRFmjQfcbmi7KikjLKAoi0bkPmgUEo_Dn5tohmLZkqkWX";
+            const data = {
+                embeds: [
+                    {
+                        title: `案件紀錄：${record.caseTitle}`,
+                        fields: [
+                            { name: "案件編號", value: record.caseID },
+                            { name: "警員姓名", value: record.officerName },
+                            { name: "案件類型", value: record.caseType },
+                            { name: "案件時間", value: record.formattedTime },
+                            { name: "案件地點", value: record.caseLocation },
+                            { name: "涉案人員", value: record.personsInvolved },
+                            { name: "案件狀態", value: record.caseStatus },
+                            { name: "案件詳情", value: record.caseDetails }
+                        ],
+                        color: 3447003
                     }
-                }]
+                ]
             };
 
             fetch(webhookURL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(embed)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
             })
-            .then(response => {
-                if (response.ok) {
-                    console.log('消息已成功發送到 Discord');
-                } else {
-                    console.error('發送 Discord Webhook 失敗');
-                }
-            })
-            .catch(error => {
-                console.error('錯誤:', error);
-            });
-        }
-
-        // 搜尋案件紀錄
-        function searchRecords() {
-            const searchQuery = document.getElementById('search').value.toLowerCase();
-            const records = JSON.parse(localStorage.getItem('caseRecords')) || [];
-            const filteredRecords = records.filter(record => 
-                record.caseTitle.toLowerCase().includes(searchQuery) || 
-                record.caseID.toLowerCase().includes(searchQuery) || 
-                record.caseDetails.toLowerCase().includes(searchQuery)
-            );
-
-            const recordsContainer = document.getElementById('recordsContainer');
-            recordsContainer.innerHTML = '';
-
-            filteredRecords.forEach(record => {
-                const recordElement = createRecordElement(record);
-                recordsContainer.appendChild(recordElement);
-            });
+            .then(response => response.json())
+            .then(data => console.log('Success:', data))
+            .catch((error) => console.error('Error:', error));
         }
     </script>
 </body>
