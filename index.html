@@ -1,443 +1,274 @@
-<!DOCTYPE html>
-<html lang="zh">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>警員案件紀錄系統</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-        }
+<html><head>
+        <title>VATBoard</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="resources/vatboard.css">
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-W37ML10HJ6&amp;l=dataLayer&amp;cx=c&amp;gtm=457e53c0za200&amp;tag_exp=102482433~102587591~102640600~102717422~102788824~102791784~102814059~102825837"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-43943268-2"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
 
-        .container {
-            background-color: #ffffff;
-            padding: 20px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 900px;
-            overflow-x: auto;
-        }
-
-        h2 {
-            text-align: center;
-            color: #2a2a2a;
-            margin-bottom: 20px;
-        }
-
-        label {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: #0056b3;
-            outline: none;
-        }
-
-        button {
-            background-color: #0056b3;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #004080;
-        }
-
-        textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-
-        .info-box {
-            padding: 15px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-top: 20px;
-            font-family: 'Courier New', Courier, monospace;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .footer {
-            text-align: center;
-            color: #888;
-            margin-top: 30px;
-        }
-
-        .footer a {
-            color: #0056b3;
-            text-decoration: none;
-        }
-
-        .records-container {
-            margin-top: 30px;
-            width: 100%;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .record-item {
-            padding: 15px;
-            background-color: #f4f4f9;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .record-item h3 {
-            margin-top: 0;
-            font-size: 18px;
-        }
-
-        .record-item p {
-            margin: 5px 0;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .card-footer button {
-            background-color: #f44336;
-            margin-left: 5px;
-        }
-
-        /* Night mode */
-        body.night-mode {
-            background-color: #333;
-            color: #fff;
-        }
-
-        body.night-mode .container {
-            background-color: #444;
-        }
-
-        body.night-mode .record-item {
-            background-color: #555;
-            color: #fff;
-        }
-
-        body.night-mode button {
-            background-color: #ff5722;
-        }
-
-        .admin-only {
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>警員案件紀錄系統</h2>
-
-        <button onclick="toggleNightMode()">切換夜間模式</button>
-
-        <!-- 登入區域 -->
-        <div id="loginArea">
-            <label>帳號：</label>
-            <input type="text" id="username" placeholder="輸入帳號"><br>
-            <label>密碼：</label>
-            <input type="password" id="password" placeholder="輸入密碼"><br>
-            <button onclick="login()">登入</button>
-        </div>
-
-        <!-- 只顯示在登入後 -->
-        <div id="mainContent" style="display:none;">
-            <label>警員姓名：</label>
-            <input type="text" id="officerName" placeholder="輸入警員姓名" /><br>
-
-            <label>案件標題：</label>
-            <input type="text" id="caseTitle" placeholder="輸入案件標題" /><br>
-
-            <label>案件類型：</label>
-            <select id="caseType">
-                <option value="刑事案件">刑事案件</option>
-                <option value="交通事故">交通事故</option>
-                <option value="民事糾紛">民事糾紛</option>
-                <option value="其他">其他</option>
-            </select><br>
-
-            <label>案件時間：</label>
-            <input type="datetime-local" id="caseTime" /><br>
-
-            <label>案件地點：</label>
-            <input type="text" id="caseLocation" placeholder="輸入案件發生地點" /><br>
-
-            <label>涉案人員：</label>
-            <input type="text" id="personsInvolved" placeholder="輸入嫌疑人、受害人等" /><br>
-
-            <label>案件狀態：</label>
-            <select id="caseStatus">
-                <option value="進行中">進行中</option>
-                <option value="已結案">已結案</option>
-                <option value="待調查">待調查</option>
-            </select><br>
-
-            <label>案件詳情：</label><br>
-            <textarea id="caseDetails" placeholder="請輸入案件詳情"></textarea><br>
-
-            <button onclick="submitReport()">提交案件</button>
-            <button onclick="logout()">登出</button>
-
-            <h3>案件紀錄</h3>
-
-            <input type="text" id="search" placeholder="搜尋案件" oninput="searchRecords()" /><br>
-
-            <div class="records-container" id="recordsContainer">
-                <!-- 顯示提交的案件紀錄 -->
+            gtag('config', 'UA-43943268-2');
+        </script>
+    </head>
+    <body>
+        <div style="margin-top:15px;" class="container-fluid">
+            <div class="row">
+                <div class="col-3">
+                    <div class="container-fluid">
+                        <img id="dep-icon" src="resources/dep-icon.png" width="70" alt="dep" style="margin-right:30px;">
+                        <img id="arr-icon" src="resources/arr-icon-enable.png" width="70" alt="arr">                        
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="container-fluid">
+                        <p>Arrivals:<span style="margin-left:5px;" id="arrcount">1</span> </p><p>Departures:<span id="depcount" style="margin-left:5px;">1</span></p>    
+                    </div>
+                </div>
+                <div class="col-3 text-center">
+                    <div class="container-fluid text-center" style="margin:auto;">
+                        <span id="vattitle">VATBoard - Flights Board for RCTP</span>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="container-fluid text-center" style="margin:auto;">
+                        <p>
+                            <span id="MyClockDisplay" class="clock text-center align-middle" onload="showTime()">13:54:07 </span>
+                            <span style="font-size:0.8em;vertical-align:super;">UTC</span>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+        <div class="container-fluid">
+            <div class="bootstrap-table bootstrap4">
+      <div class="fixed-table-toolbar"></div>
+      
+      <div class="fixed-table-container fixed-height" style="height: 400px; padding-bottom: 35.0938px;">
+      <div class="fixed-table-header" style="margin-right: 15px;"><table class="table-sm table-dark table-borderless table table-bordered table-hover" style="width: 678.484px;"><thead class="thead-light"><tr><th class="vat-center" style="" data-field="callsign"><div class="th-inner ">Callsign</div><div class="fht-cell" style="width: 77.3281px;"></div></th><th class="vat-center" style="" data-field="planned_depairport"><div class="th-inner ">Route</div><div class="fht-cell" style="width: 53.9219px;"></div></th><th class="vat-center" style="" data-field="planned_aircraft"><div class="th-inner ">Aircraft</div><div class="fht-cell" style="width: 288.406px;"></div></th><th class="vat-right" style="" data-field="altitude"><div class="th-inner ">Altitude</div><div class="fht-cell" style="width: 70.6406px;"></div></th><th class="vat-right" style="" data-field="groundspeed"><div class="th-inner ">GS</div><div class="fht-cell" style="width: 35.4688px;"></div></th><th class="vat-right" style="" data-field="dest_distance"><div class="th-inner ">NM inbound</div><div class="fht-cell" style="width: 105.156px;"></div></th><th class="vat-center" style="" data-field="ETA"><div class="th-inner ">ETA</div><div class="fht-cell" style="width: 47.5625px;"></div></th></tr></thead></table></div>
+      <div class="fixed-table-body">
+      <div class="fixed-table-loading table table-bordered table-hover fixed-table-border" style="top: 35.0938px; width: 678.484px;">
+      <span class="loading-wrap">
+      <span class="loading-text">Loading, please wait</span>
+      <span class="animation-wrap"><span class="animation-dot"></span></span>
+      </span>
+      </div>
+      <table id="table" class="table-sm table-dark table-borderless table table-bordered table-hover" data-row-style="rowStyle" data-show-pagination-switch="false" data-pagination="false" data-height="400" data-virtual-scroll="true" data-only-info-pagination="true" data-pagination-loop="false" style="margin-top: -34.0938px;">
+                <thead class="thead-light"><tr><th class="vat-center" style="" data-field="callsign"><div class="th-inner ">Callsign</div><div class="fht-cell"></div></th><th class="vat-center" style="" data-field="planned_depairport"><div class="th-inner ">Route</div><div class="fht-cell"></div></th><th class="vat-center" style="" data-field="planned_aircraft"><div class="th-inner ">Aircraft</div><div class="fht-cell"></div></th><th class="vat-right" style="" data-field="altitude"><div class="th-inner ">Altitude</div><div class="fht-cell"></div></th><th class="vat-right" style="" data-field="groundspeed"><div class="th-inner ">GS</div><div class="fht-cell"></div></th><th class="vat-right" style="" data-field="dest_distance"><div class="th-inner ">NM inbound</div><div class="fht-cell"></div></th><th class="vat-center" style="" data-field="ETA"><div class="th-inner ">ETA</div><div class="fht-cell"></div></th></tr></thead>
+            <tbody style=""><tr data-index="0"><td class="vat-center" style="border-bottom: 1pt dotted #776600; "><img alt="" width="24px" src="resources/logos/GTI.png"><span style="margin-left:10px;">GTI9357</span></td><td class="vat-center" style="border-bottom: 1pt dotted #776600; ">EBLG<span id="arrow-route-container"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path class="arrow-route" d="M7.5 11.5L9 13l5-5-5-5-1.5 1.5L10.179 7H2v2h8.179L7.5 11.5z"></path></svg></span>RCTP</td><td class="vat-center" style="border-bottom: 1pt dotted #776600; ">B77L/H-SDE1E2E3FGHIJ2J3J4J5M1RWXY/LB1D1</td><td class="vat-right" style="border-bottom: 1pt dotted #776600; ">32.796</td><td class="vat-right" style="border-bottom: 1pt dotted #776600; ">593</td><td class="vat-right" style="border-bottom: 1pt dotted #776600; ">2.522</td><td class="vat-center" style="border-bottom: 1pt dotted #776600; ">18:08</td></tr></tbody></table><div class="fixed-table-border" style="width: 432.891px; height: 348.406px;"></div></div>
+      <div class="fixed-table-footer" style="display: none;"><table><thead><tr></tr></thead></table></div>
+      </div>
+      <div class="fixed-table-pagination" style="display: none;"></div>
+      </div><div class="clearfix"></div>
+            <div class="row-fluid text-center">
+                <span id="appinfo" class="text-center">© 2020 Elias Stassinos, v1.09-20-g14c0210
+</span>     
+            </div>
 
-    <script>
-        let currentUser = null;
+        </div>
+        <script src="resources/jquery-3.5.0.min.js"></script>
+        <script src="https://unpkg.com/bootstrap-table@1.16.0/dist/bootstrap-table.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>
+        <script>
+                                function logoFormatter(value, row, index) {
+                                    var airline = value.trim().substring(0, 3);
+                                    return '<img alt="" width=24px src="resources/logos/' + airline + '.png"><span style="margin-left:10px;">' + value + '</span>';
+                                }
+                                function airportsFormatter(value, row, index) {
+                                    return [
+                                        value,
+                                        '<span id="arrow-route-container"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16"><path class="arrow-route" d="M7.5 11.5L9 13l5-5-5-5-1.5 1.5L10.179 7H2v2h8.179L7.5 11.5z"/></svg></span>',
+                                        row.planned_destairport
+                                    ].join('');
+                                }
+                                function rowStyle(row, index) {
+                                    return {
+                                        css: {
+                                            'border-bottom': '1pt dotted #776600'
+                                        }
+                                    }
+                                }
+                                $(function () {
+                                    var vatsimdata = [];
+                                    var currentMode = '';
+                                    var arrivals = 0;
+                                    var departures = 0;
+                                    var timerPrimary;
+                                    var timerFadeout;
+                                    var $table = $('#table');
+                                    var icao_url = getUrlParam('icao', 'LGAV').toUpperCase();
+                                    //
+                                    //MAIN
+                                    //
+                                    $table.bootstrapTable({
+                                    });
+                                    getVersion();
+                                    getData();
+                                    timerPrimary = setInterval(getData, 120000);
+                                    showTime();
+                                    setDistanceTitle();
+                                    //        
+                                    //Functions/Methods
+                                    //
+                                    function getData() {
+                                        $.getJSON('getpilots.php', {icao: escape(icao_url)}, function (d) {
+                                            vatsimdata = d;
+                                            postgetData(d);
+                                        });
+                                    }
+                                    function getVersion() {
+                                        $.getJSON('getversion.php', function (ver) {
+                                            var fullInfo = '\251 2020 Elias Stassinos, ' + ver;
+                                            $('#appinfo').text(fullInfo);
+                                        });
+                                    }
+                                    function postgetData(d) {
+                                        $('#vattitle').text("VATBoard - Flights Board for " + icao_url);
+                                        stopfadeoutFirst();
+                                        prepareCounters(d);
+                                        updateCounters(d);
+                                        //Do the loop until reload
+                                        doLoop();
+                                        setTimeout(function () {
+                                            doLoop();
+                                        }, 60000);
+                                    }
+                                    function doLoop() {
+                                        determineFilter(vatsimdata);
+                                        fadeoutFirst();
+                                    }
+                                    function setDistanceTitle() {
+                                        $table.bootstrapTable('updateColumnTitle', {
+                                            field: 'dep_distance',
+                                            title: 'NM outound'
+                                        });
+                                        $table.bootstrapTable('updateColumnTitle', {
+                                            field: 'dest_distance',
+                                            title: 'NM inbound'
+                                        });
+                                    }
+                                    function getUrlParam(parameter, defaultvalue) {
+                                        var urlparameter = defaultvalue;
+                                        if (window.location.href.indexOf(parameter) > -1) {
+                                            urlparameter = getUrlVars()[parameter];
+                                        }
+                                        return urlparameter;
+                                    }
+                                    function getUrlVars() {
+                                        var vars = {};
+                                        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                                            vars[key] = value;
+                                        });
+                                        return vars;
+                                    }
+                                    function determineFilter(d) {
+                                        if (currentMode === 'arr') {
+                                            filterDepartures(d);
+                                        } else {
+                                            filterArrivals(d);
+                                        }
+                                    }
+                                    function filterArrivals(d) {
+                                        stopfadeoutFirst();
+                                        currentMode = 'arr';
+                                        $table.bootstrapTable('hideColumn', 'dep_distance');
+                                        $table.bootstrapTable('showColumn', 'dest_distance');
+                                        $('#arr-icon').attr('src', 'resources/arr-icon-enable.png');
+                                        $('#dep-icon').attr('src', 'resources/dep-icon.png');
+                                        $('#table tbody').fadeOut(1000, function () {
+                                            $table.bootstrapTable('load', d);
+                                            $table.bootstrapTable(
+                                                    'filterBy', {planned_destairport: icao_url});
+                                        }).fadeIn(1000);
+                                    }
+                                    function filterDepartures(d) {
+                                        stopfadeoutFirst();
+                                        currentMode = 'dep';
+                                        $table.bootstrapTable('showColumn', 'dep_distance');
+                                        $table.bootstrapTable('hideColumn', 'dest_distance');
+                                        $('#arr-icon').attr('src', 'resources/arr-icon.png');
+                                        $('#dep-icon').attr('src', 'resources/dep-icon-enable.png');
+                                        $('#table tbody').fadeOut(1000, function () {
+                                            $table.bootstrapTable('load', d);
+                                            $table.bootstrapTable('filterBy', {
+                                                planned_depairport: icao_url
+                                            });
+                                        }).fadeIn(1000);
+                                    }
+                                    function updateCounters(d) {
+                                        $('#arrcount').text(arrivals);
+                                        $('#depcount').text(departures);
+                                    }
+                                    function prepareCounters(d) {
+                                        arrivals = d.filter(v => v.planned_destairport === icao_url).length;
+                                        departures = d.filter(v => v.planned_depairport === icao_url).length;
+                                    }
+                                    function fadeoutFirst() {
+                                        timerFadeout = setInterval(function () {
+                                            if ($('#table tbody tr').length <= 10) {
+                                                stopfadeoutFirst();
+                                            } else {
+                                                let row = $('#table tbody tr:first')
+                                                row.animate({opacity: 0}, 1000, function () {
+                                                    let col = row.find('td')
+                                                    col
+                                                            .wrapInner('<div style="display: block;" />')
+                                                            .parent()
+                                                            .find('td > div')
+                                                            .animate({
+                                                                height: 0
+                                                            }, 1000);
 
-        // 開啟夜間模式
-        function toggleNightMode() {
-            document.body.classList.toggle("night-mode");
-        }
+                                                    col.animate({
+                                                        padding: 0
+                                                    }, 1000, function () {
+                                                        row.remove();
+                                                    });
+                                                    $(this).slideUp(1000, function () {
+                                                        row.remove();
+                                                    });
+                                                });
+                                            }
+                                        }, 3500);
+                                    }
+                                    function stopfadeoutFirst() {
+                                        clearTimeout(timerFadeout);
+                                    }
+                                    function showTime() {
+                                        var date = new Date();
+                                        var offsetHours = date.getTimezoneOffset() / 60;
+                                        var h = date.getUTCHours() // 0 - 23
+                                        var m = date.getMinutes(); // 0 - 59
+                                        var s = date.getSeconds(); // 0 - 59
+                                        h = (h < 0) ? 24 - h : h;
+                                        h = (h < 10) ? "0" + h : h;
+                                        m = (m < 10) ? "0" + m : m;
+                                        s = (s < 10) ? "0" + s : s;
 
-        // 登入驗證
-        function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
+                                        var time = h + ":" + m + ":" + s + " ";
+                                        document.getElementById("MyClockDisplay").innerText = time;
+                                        document.getElementById("MyClockDisplay").textContent = time;
 
-            if (username === "admin" && password === "admin123") {
-                currentUser = "admin";
-                showMainContent();
-            } else if (username === "officer" && password === "officer123") {
-                currentUser = "officer";
-                showMainContent();
-            } else {
-                alert("帳號或密碼錯誤");
-            }
-        }
+                                        setTimeout(showTime, 1000);
 
-        // 顯示主內容
-        function showMainContent() {
-            document.getElementById("loginArea").style.display = "none";
-            document.getElementById("mainContent").style.display = "block";
+                                    }
+                                    $("#arr-icon").click(function () {
+                                        doLoop();
+                                    });
+                                    $("#dep-icon").click(function () {
+                                        doLoop();
+                                    });
+                                });
+        </script>
+    
 
-            // 管理員可以編輯、刪除
-            if (currentUser === "admin") {
-                document.querySelectorAll(".admin-only").forEach(el => el.style.display = "inline");
-            } else {
-                document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
-            }
-
-            loadRecords();
-        }
-
-        // 登出
-        function logout() {
-            currentUser = null;
-            document.getElementById("loginArea").style.display = "block";
-            document.getElementById("mainContent").style.display = "none";
-        }
-
-        // 頁面載入時從 localStorage 讀取案件紀錄
-        window.onload = function() {
-            loadRecords();
-        }
-
-        // 從 localStorage 載入案件紀錄
-        function loadRecords() {
-            const records = JSON.parse(localStorage.getItem('caseRecords')) || [];
-            const recordsContainer = document.getElementById('recordsContainer');
-            recordsContainer.innerHTML = '';
-
-            records.forEach(record => {
-                const recordElement = createRecordElement(record);
-                recordsContainer.appendChild(recordElement);
-            });
-        }
-
-        // 儲存紀錄到 localStorage
-        function saveRecord(record) {
-            let records = JSON.parse(localStorage.getItem('caseRecords')) || [];
-            records.push(record);
-            localStorage.setItem('caseRecords', JSON.stringify(records));
-        }
-
-        // 創建案件紀錄的 HTML 元素
-        function createRecordElement(record) {
-            const recordElement = document.createElement('div');
-            recordElement.classList.add('record-item');
-            
-            recordElement.innerHTML = `
-                <h3>${record.caseTitle}</h3>
-                <p><strong>案件編號:</strong> ${record.caseID}</p>
-                <p><strong>警員姓名:</strong> ${record.officerName}</p>
-                <p><strong>案件類型:</strong> ${record.caseType}</p>
-                <p><strong>案件時間:</strong> ${record.formattedTime}</p>
-                <p><strong>案件地點:</strong> ${record.caseLocation}</p>
-                <p><strong>涉案人員:</strong> ${record.personsInvolved}</p>
-                <p><strong>案件狀態:</strong> ${record.caseStatus}</p>
-                <div class="card-footer">
-                    ${currentUser === "admin" ? `<button onclick="editRecord('${record.caseID}')">編輯</button>
-                    <button onclick="deleteRecord('${record.caseID}')">刪除</button>` : ''}
-                </div>
-            `;
-            
-            return recordElement;
-        }
-
-        // 提交案件紀錄
-        function submitReport() {
-            const officerName = document.getElementById("officerName").value || "未知警員";
-            const caseTitle = document.getElementById("caseTitle").value || "未命名案件";
-            const caseType = document.getElementById("caseType").value;
-            const caseTime = document.getElementById("caseTime").value || "未填寫";
-            const caseLocation = document.getElementById("caseLocation").value || "未填寫";
-            const personsInvolved = document.getElementById("personsInvolved").value || "無";
-            const caseStatus = document.getElementById("caseStatus").value;
-            const caseDetails = document.getElementById("caseDetails").value;
-            
-            if (!caseDetails) {
-                alert("請輸入案件詳情");
-                return;
-            }
-            
-            // 生成自動案件編號（根據時間戳）
-            const caseID = `案件編號-${new Date().getTime()}`;
-
-            // 格式化日期時間為 24 小時制
-            const formattedTime = new Date(caseTime).toLocaleString('zh-TW', { hour12: false });
-
-            const record = {
-                caseID,
-                officerName,
-                caseTitle,
-                caseType,
-                caseTime,
-                formattedTime,
-                caseLocation,
-                personsInvolved,
-                caseStatus,
-                caseDetails
-            };
-
-            // 儲存案件紀錄
-            saveRecord(record);
-
-            // 發送案件資料到 Discord
-            sendToDiscord(record);
-
-            // 重新載入紀錄
-            loadRecords();
-            
-            // 清空輸入框
-            document.getElementById("officerName").value = '';
-            document.getElementById("caseTitle").value = '';
-            document.getElementById("caseType").value = '刑事案件';
-            document.getElementById("caseTime").value = '';
-            document.getElementById("caseLocation").value = '';
-            document.getElementById("personsInvolved").value = '';
-            document.getElementById("caseStatus").value = '進行中';
-            document.getElementById("caseDetails").value = '';
-        }
-
-        // 發送案件紀錄到 Discord
-        function sendToDiscord(record) {
-            const webhookURL = 'https://discord.com/api/webhooks/1307625865215217664/X-ySSOoI5EuJtErS48mgqpFlRFmjQfcbmi7KikjLKAoi0bkPmgUEo_Dn5tohmLZkqkWX'; // 你的 Discord Webhook URL
-            const embed = {
-                "embeds": [{
-                    "title": `📋 案件紀錄 - ${record.caseTitle}`,
-                    "description": `**案件詳情：** ${record.caseDetails}`,
-                    "color": 7506394, // 藍色
-                    "fields": [
-                        {
-                            "name": "案件編號",
-                            "value": record.caseID,
-                            "inline": true
-                        },
-                        {
-                            "name": "警員姓名",
-                            "value": record.officerName,
-                            "inline": true
-                        },
-                        {
-                            "name": "案件類型",
-                            "value": record.caseType,
-                            "inline": true
-                        },
-                        {
-                            "name": "案件時間",
-                            "value": record.formattedTime,
-                            "inline": true
-                        },
-                        {
-                            "name": "案件地點",
-                            "value": record.caseLocation,
-                            "inline": true
-                        },
-                        {
-                            "name": "涉案人員",
-                            "value": record.personsInvolved,
-                            "inline": true
-                        },
-                        {
-                            "name": "案件狀態",
-                            "value": record.caseStatus,
-                            "inline": true
-                        }
-                    ],
-                    "footer": {
-                        "text": `警員案件紀錄系統 | 上傳時間: ${new Date().toLocaleString()}`,
-                        "icon_url": "https://cdn.discordapp.com/attachments/1043916196350804060/1343556776079130707/IMG_0379.png?ex=67bdb441&is=67bc62c1&hm=0c55fd1c067f8141186f921b23990ae61a408e1f4c76501df140ab0a96cc0c0b&"  // 可以換成你的 LOGO 圖示
-                    },
-                    "thumbnail": {
-                        "url": "https://example.com/thumbnail-image.png"  // 如果有圖片或圖示可以顯示
-                    },
-                    "author": {
-                        "name": "洛聖都市警局-案件紀錄",  // 你的機構名稱
-                        "icon_url": "https://cdn.discordapp.com/attachments/1043916196350804060/1343556776079130707/IMG_0379.png?ex=67bdb441&is=67bc62c1&hm=0c55fd1c067f8141186f921b23990ae61a408e1f4c76501df140ab0a96cc0c0b&"  // 可以換成你的機構 logo
-                    }
-                }]
-            }; 
-            fetch(webhookURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(embed)
-            })
-            .then(response => response.json())
-            .then(data => console.log('成功發送到 Discord', data))
-            .catch(error => console.error('發送到 Discord 失敗', error));
-        }
-    </script>
-</body>
-</html>
+</body></html>
