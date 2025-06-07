@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>歡迎頁面</title>
   <style>
     body {
@@ -20,47 +20,123 @@
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
       text-align: center;
+      max-width: 400px;
+      animation: fadeIn 1s ease;
     }
     .welcome-box h1 {
       color: #333;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .welcome-box p {
       color: #555;
       font-size: 16px;
-      margin-bottom: 20px;
+      margin: 5px 0 20px 0;
     }
-    .logout-button {
+    .logout-button, .refresh-button {
       padding: 10px 20px;
+      margin: 0 10px 10px 10px;
       background-color: #ff6b6b;
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-size: 16px;
+      transition: background-color 0.3s ease;
     }
-    .logout-button:hover {
+    .logout-button:hover, .refresh-button:hover {
       background-color: #e63946;
+    }
+    #countdownTimer {
+      color: #999;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
     }
   </style>
 </head>
 <body>
   <div class="welcome-box">
     <h1 id="welcomeText">歡迎登入成功！</h1>
+    <p id="accountInfo"></p>  <!-- 帳號顯示 -->
     <p>您已成功進入系統，請開始使用。</p>
-    <button class="logout-button" onclick="logout()">登出</button>
+    <p id="loginTime"></p>
+    <div>
+      <button class="logout-button" onclick="logout()">登出</button>
+      <button class="refresh-button" onclick="refreshInfo()">重新整理</button>
+    </div>
+    <p id="countdownTimer"></p>
   </div>
 
   <script>
+    // 取得 URL 參數 user
     const params = new URLSearchParams(window.location.search);
     const username = params.get('user');
-    if (username) {
-      document.getElementById('welcomeText').textContent = `歡迎 ${username} 登入成功！`;
+
+    // 顯示歡迎訊息與時間
+    function displayWelcome() {
+      const now = new Date();
+      let greeting = '您好';
+      const hour = now.getHours();
+      if (hour < 12) greeting = '早安';
+      else if (hour < 18) greeting = '午安';
+      else greeting = '晚安';
+
+      if (username) {
+        document.getElementById('welcomeText').textContent = `${greeting}，${username}，歡迎登入成功！`;
+        document.getElementById('accountInfo').textContent = `帳號：${username}`;
+      } else {
+        document.getElementById('welcomeText').textContent = '歡迎登入成功！';
+        document.getElementById('accountInfo').textContent = '';
+      }
+
+      document.getElementById('loginTime').textContent = `登入時間：${now.toLocaleString()}`;
     }
 
+    // 登出功能
     function logout() {
+      // 清除 sessionStorage/localStorage 登入資料
+      sessionStorage.clear();
+      localStorage.clear();
       window.location.href = "index.html";
     }
+
+    // 自動登出倒數計時（秒）
+    let countdown = 300; // 5 分鐘
+    let countdownTimerId;
+
+    function startCountdown() {
+      updateCountdownText();
+      countdownTimerId = setInterval(() => {
+        countdown--;
+        if (countdown <= 0) {
+          clearInterval(countdownTimerId);
+          alert("您已閒置太久，將自動登出。");
+          logout();
+        }
+        updateCountdownText();
+      }, 1000);
+    }
+
+    function updateCountdownText() {
+      const min = Math.floor(countdown / 60);
+      const sec = countdown % 60;
+      document.getElementById('countdownTimer').textContent = `自動登出倒數：${min}分${sec.toString().padStart(2,'0')}秒`;
+    }
+
+    // 重新整理功能：重設登入時間與倒數
+    function refreshInfo() {
+      countdown = 300; // 重置倒數
+      clearInterval(countdownTimerId);
+      startCountdown();
+      displayWelcome();
+    }
+
+    // 初始化
+    displayWelcome();
+    startCountdown();
   </script>
 </body>
 </html>
