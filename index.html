@@ -74,8 +74,8 @@
 
       // 假設密碼為 secret123
       if (password === "secret123") {
-        // 成功登入後導向另一個頁面
-        window.location.href = "welcome.html"; // 替換為你自己的目的頁面
+        // 將帳號名稱帶入 welcome.html
+        window.location.href = "welcome.html?user=" + encodeURIComponent(username);
       } else {
         errorMsg.textContent = "密碼錯誤，請再試一次。";
       }
