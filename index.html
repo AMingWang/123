@@ -1,105 +1,85 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>登入頁面</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>登入畫面</title>
   <style>
     body {
       font-family: "Microsoft JhengHei", sans-serif;
-      background: linear-gradient(135deg, #89f7fe, #66a6ff);
+      background: linear-gradient(135deg, #74ebd5, #ACB6E5);
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       height: 100vh;
       margin: 0;
     }
-    .login-box {
+    .login-container {
       background-color: white;
       padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-      text-align: center;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       width: 300px;
     }
-    .login-box h1 {
-      color: #333;
-      margin-bottom: 20px;
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 25px;
     }
-    .login-box input[type="text"],
-    .login-box input[type="password"] {
+    .login-container input[type="text"],
+    .login-container input[type="password"] {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
+      margin: 8px 0 16px 0;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 8px;
     }
-    .login-box button {
+    .login-container button {
       width: 100%;
       padding: 10px;
-      background-color: #4CAF50;
+      background-color: #5c9ded;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       cursor: pointer;
+      font-size: 16px;
     }
-    .login-box .options {
-      margin-top: 10px;
-      display: flex;
-      justify-content: space-between;
+    .login-container button:hover {
+      background-color: #3c7bd6;
+    }
+    .error {
+      color: red;
       font-size: 14px;
+      text-align: center;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="login-box">
-    <h1>請登入</h1>
-    <form onsubmit="return login(event)">
-      <input type="text" id="username" placeholder="使用者名稱" required><br>
-      <input type="password" id="password" placeholder="密碼" required>
-      <div class="options">
-        <label><input type="checkbox" id="remember"> 記住我</label>
-        <a href="#" onclick="alert('請聯絡系統管理員。')">忘記密碼？</a>
-      </div>
+  <div class="login-container">
+    <h2>登入系統</h2>
+    <form id="loginForm">
+      <input type="text" placeholder="使用者名稱" id="username" name="username" required />
+      <input type="password" placeholder="密碼" id="password" name="password" required />
       <button type="submit">登入</button>
+      <div id="errorMsg" class="error"></div>
     </form>
   </div>
 
   <script>
-    const CORRECT_USERNAME = "admin";
-    const CORRECT_PASSWORD = "123456";
-    let attempts = 3;
-
-    window.onload = () => {
-      const savedUsername = localStorage.getItem("savedUsername");
-      if (savedUsername) {
-        document.getElementById("username").value = savedUsername;
-        document.getElementById("remember").checked = true;
-      }
-    }
-
-    function login(event) {
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
       event.preventDefault();
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
+      const errorMsg = document.getElementById("errorMsg");
 
-      if (username === CORRECT_USERNAME && password === CORRECT_PASSWORD) {
-        if (document.getElementById("remember").checked) {
-          localStorage.setItem("savedUsername", username);
-        } else {
-          localStorage.removeItem("savedUsername");
-        }
-        window.location.href = "welcome.html";
+      // 假設密碼為 secret123
+      if (password === "secret123") {
+        // 成功登入後導向另一個頁面
+        window.location.href = "welcome.html"; // 替換為你自己的目的頁面
       } else {
-        attempts--;
-        if (attempts <= 0) {
-          alert("錯誤次數過多，請稍後再試。");
-          document.querySelector("button").disabled = true;
-        } else {
-          alert(`帳號或密碼錯誤，剩餘嘗試次數：${attempts}`);
-        }
+        errorMsg.textContent = "密碼錯誤，請再試一次。";
       }
-    }
+    });
   </script>
 </body>
 </html>
