@@ -29,9 +29,22 @@
     .login-container input[type="password"] {
       width: 100%;
       padding: 10px;
-      margin: 8px 0 16px 0;
+      margin: 8px 0 10px 0;
       border: 1px solid #ccc;
       border-radius: 8px;
+    }
+    .show-password {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .show-password input {
+      margin-right: 6px;
+    }
+    .login-container label {
+      font-size: 14px;
     }
     .login-container button {
       width: 100%;
@@ -46,6 +59,15 @@
     .login-container button:hover {
       background-color: #3c7bd6;
     }
+    .login-container .bottom-links {
+      margin-top: 15px;
+      font-size: 13px;
+    }
+    .login-container .bottom-links a {
+      color: #0077cc;
+      text-decoration: none;
+      margin: 0 5px;
+    }
     .error {
       color: red;
       font-size: 14px;
@@ -59,26 +81,72 @@
     <form id="loginForm">
       <input type="text" placeholder="使用者名稱" id="username" name="username" required />
       <input type="password" placeholder="密碼" id="password" name="password" required />
+      <div class="show-password">
+        <input type="checkbox" id="togglePassword" />
+        <label for="togglePassword">顯示密碼</label>
+      </div>
+      <div class="show-password">
+        <input type="checkbox" id="rememberMe" />
+        <label for="rememberMe">記住我</label>
+      </div>
       <button type="submit">登入</button>
       <div id="errorMsg" class="error"></div>
     </form>
+    <div class="bottom-links">
+      <a href="#" onclick="alert('請聯繫管理員重設密碼。')">忘記密碼？</a>
+      |
+      <a href="#" onclick="alert('註冊功能尚未開放。')">註冊帳號</a>
+    </div>
   </div>
 
   <script>
+    const passwordField = document.getElementById("password");
+    document.getElementById("togglePassword").addEventListener("change", function () {
+      passwordField.type = this.checked ? "text" : "password";
+    });
+
+    const MAX_ATTEMPTS = 3;
+    let attempts = 0;
+
+    // 如果記住我已儲存，帶入使用者名稱
+    const savedUsername = localStorage.getItem("savedUsername");
+    if (savedUsername) {
+      document.getElementById("username").value = savedUsername;
+      document.getElementById("rememberMe").checked = true;
+    }
+
     document.getElementById("loginForm").addEventListener("submit", function(event) {
       event.preventDefault();
+
       const username = document.getElementById("username").value.trim();
       const password = document.getElementById("password").value;
       const errorMsg = document.getElementById("errorMsg");
+      const remember = document.getElementById("rememberMe").checked;
+
+      if (username === "" || password === "") {
+        errorMsg.textContent = "請輸入使用者名稱和密碼。";
+        return;
+      }
 
       if (password === "secret123") {
         localStorage.setItem("username", username);
+        if (remember) {
+          localStorage.setItem("savedUsername", username);
+        } else {
+          localStorage.removeItem("savedUsername");
+        }
         window.location.href = "welcome.html";
       } else {
-        errorMsg.textContent = "密碼錯誤，請再試一次。";
+        attempts++;
+        if (attempts >= MAX_ATTEMPTS) {
+          errorMsg.textContent = "已達最大登入次數，請稍後再試。";
+          document.getElementById("username").disabled = true;
+          document.getElementById("password").disabled = true;
+        } else {
+          errorMsg.textContent = `密碼錯誤，剩餘 ${MAX_ATTEMPTS - attempts} 次機會。`;
+        }
       }
     });
   </script>
 </body>
 </html>
-
