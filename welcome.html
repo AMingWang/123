@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>歡迎頁面</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background: linear-gradient(135deg, #FFDEE9, #B5FFFC);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .welcome-box {
+      background-color: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      max-width: 400px;
+    }
+    .welcome-box h1 {
+      color: #333;
+      margin-bottom: 15px;
+    }
+    .welcome-box p {
+      color: #555;
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+    .username {
+      font-weight: bold;
+      color: #0077cc;
+    }
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .nav a {
+      text-decoration: none;
+      background-color: #5c9ded;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .nav a:hover {
+      background-color: #3c7bd6;
+    }
+    .logout {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #777;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="welcome-box">
+    <h1>歡迎，<span class="username" id="displayName"></span>！</h1>
+    <p>您已成功登入，請使用下方功能進行操作。</p>
+    <div class="nav">
+      <a href="#">主控台</a>
+      <a href="#">設定</a>
+      <a href="#">支援</a>
+    </div>
+    <div class="logout" onclick="logout()">登出</div>
+  </div>
+
+  <script>
+    // 取得使用者名稱並顯示（需從登入頁傳入 localStorage）
+    const username = localStorage.getItem("username") || "訪客";
+    document.getElementById("displayName").textContent = username;
+
+    // 登出動作（清除登入資訊並返回登入頁）
+    function logout() {
+      localStorage.removeItem("username");
+      window.location.href = "index.html"; // 假設登入頁是 index.html
+    }
+  </script>
+</body>
+</html>
